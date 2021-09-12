@@ -1,0 +1,131 @@
+	CREATE OR REPLACE FUNCTION add_update_movie() RETURNS TRIGGER AS $$
+BEGIN
+  IF NEW.age_rating_id IS NULL THEN RAISE EXCEPTION 'Укажите возрастной рейтинг фильма!'; END IF;
+  IF NEW.title IS NULL OR length(NEW.title) = 0 THEN RAISE EXCEPTION 'Укажите название фильма!'; END IF;
+	IF length(NEW.title) > 300 THEN RAISE EXCEPTION 'Слишком длинное название!'; END IF;
+	IF NEW.release_year IS NULL THEN RAISE EXCEPTION 'Укажите год выхода фильма!'; END IF;
+	IF EXTRACT('YEAR' FROM CURRENT_DATE) < NEW.release_year THEN RAISE EXCEPTION 'Фильм не мог выйти позднее % года!', EXTRACT('YEAR' FROM CURRENT_DATE); END IF;
+	IF NEW.release_year < 1910 THEN RAISE EXCEPTION 'Фильм не мог выйти раньше 1910 года!'; END IF;
+	IF NEW.duration IS NULL THEN RAISE EXCEPTION 'Укажите продолжительность фильма!'; END IF;
+	IF NEW.duration < 0 THEN RAISE EXCEPTION 'Продолжительность фильма должна быть положительным числом!'; END IF;
+	IF NEW.duration > 250 THEN RAISE EXCEPTION 'Фильм идет слишком долго, вряд ли мы сможем допустить его к прокату'; END IF;
+	RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER add_update_movie BEFORE INSERT OR UPDATE ON movies
+    FOR EACH ROW EXECUTE PROCEDURE add_update_movie();
+
+CREATE OR REPLACE FUNCTION add_update_ticket() RETURNS TRIGGER AS $$
+BEGIN
+	IF NEW.ticket_count < 0 THEN RAISE EXCEPTION 'Билеты уже закончились!'; END IF;
+	IF NEW.ticket_cost < 0 THEN RAISE EXCEPTION 'Цена билета не может быть отрицательной!'; END IF;
+	IF NEW.begining IS NULL THEN RAISE EXCEPTION 'Укажите дату и время начала сеанса!'; END IF;
+	IF NEW.hall_id IS NULL THEN RAISE EXCEPTION 'Укажите зал!'; END IF;
+	IF NEW.movie_id IS NULL THEN RAISE EXCEPTION 'Укажите фильм!'; END IF;
+	IF (DATE(NEW.begining) < CURRENT_DATE) THEN RAISE EXCEPTION 'Дата начала сеанса должна быть позже (или равна) сегодняшней'; END IF;
+	IF EXISTS (SELECT t.begining, m.duration FROM tickets t LEFT JOIN movies m USING(movie_id) WHERE hall_id = NEW.hall_id AND DATE(t.begining + (m.duration * INTERVAL '1 minute')) = DATE(NEW.begining) AND t.begining + (m.duration * INTERVAL '1 minute') > NEW.begining AND CASE WHEN TG_OP = 'UPDATE' THEN t.ticket_id <> OLD.ticket_id ELSE TRUE END) THEN RAISE EXCEPTION 'Необходимо перенести сеанс: на момент его начала предыдущий фильм еще не закончится!'; END IF;
+	RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER add_update_ticket BEFORE INSERT OR UPDATE ON tickets
+    FOR EACH ROW EXECUTE PROCEDURE add_update_ticket();
+
+CREATE OR REPLACE FUNCTION add_update_hall() RETURNS TRIGGER AS $$
+BEGIN
+	IF NEW.hall_name IS NULL OR length(NEW.hall_name) = 0 THEN RAISE EXCEPTION 'Укажите название зала!'; END IF;
+	IF EXISTS (SELECT * FROM halls h WHERE h.hall_name = NEW.hall_name AND CASE WHEN TG_OP = 'UPDATE' THEN h.hall_id <> OLD.hall_id ELSE TRUE END) THEN RAISE EXCEPTION 'Зал % уже добавлен!', NEW.hall_name; END IF;
+	RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER add_update_hall BEFORE INSERT OR UPDATE ON halls
+    FOR EACH ROW EXECUTE PROCEDURE add_update_hall();
+	
+	CREATE OR REPLACE FUNCTION add_update_visitor_role() RETURNS TRIGGER AS $$
+BEGIN
+	IF NEW.visitor_role IS NULL OR length(NEW.visitor_role) = 0 THEN RAISE EXCEPTION 'Укажите название роли!'; END IF;
+	IF length(NEW.visitor_role) > 100 THEN RAISE EXCEPTION 'Слишком длинное название роли!'; END IF;
+	IF TG_OP = 'INSERT' AND EXISTS (SELECT * FROM visitor_roles v WHERE v.visitor_role = NEW.visitor_role) THEN RAISE EXCEPTION 'Роль % уже добавлена!', NEW.visitor_role; END IF;
+	RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER add_update_visitor_role BEFORE INSERT OR UPDATE ON visitor_roles
+    FOR EACH ROW EXECUTE PROCEDURE add_update_visitor_role();
+		
+	CREATE OR REPLACE FUNCTION add_update_visitor() RETURNS TRIGGER AS $$
+BEGIN
+	IF NEW.visitor_login IS NULL OR length(NEW.visitor_login) = 0 THEN RAISE EXCEPTION 'Укажите логин!'; END IF;
+	IF NEW.visitor_password IS NULL OR length(NEW.visitor_password) = 0 THEN RAISE EXCEPTION 'Укажите пароль!'; END IF;
+	IF length(NEW.visitor_login) > 50 THEN RAISE EXCEPTION 'Слишком длинный логин!'; END IF;
+	IF length(NEW.visitor_password) > 50 THEN RAISE EXCEPTION 'Слишком длинный пароль!'; END IF;
+	IF NEW.visitor_name IS NOT NULL AND length(NEW.visitor_name) > 100 THEN RAISE EXCEPTION 'Слишком длинная запись имени!'; END IF;
+	IF NEW.visitor_surname IS NOT NULL AND length(NEW.visitor_surname) > 100 THEN RAISE EXCEPTION 'Слишком длинная запись фамилии!'; END IF;
+	IF NEW.visitor_patronymic IS NOT NULL AND length(NEW.visitor_patronymic) > 100 THEN RAISE EXCEPTION 'Слишком длинная запись отчества!'; END IF;
+	IF (NEW.role_id IS NULL) THEN RAISE EXCEPTION 'Укажите роль!'; END IF;
+	IF EXISTS (SELECT * FROM visitors v WHERE v.visitor_login = NEW.visitor_login AND CASE WHEN TG_OP = 'UPDATE' THEN v.visitor_id <> OLD.visitor_id ELSE TRUE END) THEN RAISE EXCEPTION 'Пользователь % уже зарегистрирован', NEW.visitor_login; END IF;
+	IF (NEW.birth_date IS NULL) THEN RAISE EXCEPTION 'Укажите дату рождения!'; END IF;
+	IF ((EXTRACT('YEAR' FROM CURRENT_DATE) - EXTRACT('YEAR' FROM NEW.birth_date)) > 120) THEN RAISE EXCEPTION 'Кажется, возраст несколько преувеличен...'; END IF;
+	IF (EXTRACT('YEAR' FROM CURRENT_DATE) - EXTRACT('YEAR' FROM NEW.birth_date) < 10) THEN RAISE EXCEPTION 'Посетитель еще слишком мал, чтобы заказывать билеты самостоятельно!'; END IF;
+	NEW.visitor_password := md5(NEW.visitor_password);
+	RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER add_update_visitor BEFORE INSERT OR UPDATE ON visitors
+    FOR EACH ROW EXECUTE PROCEDURE add_update_visitor();
+		
+CREATE OR REPLACE FUNCTION add_update_crew_member() RETURNS TRIGGER AS $$
+BEGIN
+	IF NEW.member_name IS NULL OR length(NEW.member_name) = 0 THEN RAISE EXCEPTION 'Укажите имя!'; END IF;
+	IF length(NEW.member_name) > 100 THEN RAISE EXCEPTION 'Слишком длинная запись имени!'; END IF;
+	IF NEW.member_surname IS NOT NULL AND length(NEW.member_surname) > 100 THEN RAISE EXCEPTION 'Слишком длинная запись фамилии!'; END IF;
+	IF NEW.member_patronymic IS NOT NULL AND length(NEW.member_patronymic) > 100 THEN RAISE EXCEPTION 'Слишком длинная запись отчества!'; END IF;
+	IF (NEW.crew_role_id IS NULL) THEN RAISE EXCEPTION 'Укажите роль!'; END IF;
+	RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER add_update_crew_member BEFORE INSERT OR UPDATE ON crew_members 
+		FOR EACH ROW EXECUTE PROCEDURE add_update_crew_member();
+
+CREATE OR REPLACE FUNCTION add_update_reservation() RETURNS TRIGGER AS $$
+BEGIN
+	IF NEW.visitor_id IS NULL THEN RAISE EXCEPTION 'Укажите посетителя!'; END IF;
+	IF NEW.ticket_id IS NULL THEN RAISE EXCEPTION 'Укажите сеанс!'; END IF;
+	IF ((SELECT ar.min_age FROM movies m LEFT JOIN age_ratings ar USING (age_rating_id) WHERE m.movie_id = (SELECT movie_id FROM tickets WHERE ticket_id=NEW.ticket_id)) > (EXTRACT('YEAR' FROM CURRENT_DATE) - (EXTRACT ('YEAR' FROM (SELECT v.birth_date FROM visitors v WHERE v.visitor_login = SESSION_USER))))) THEN RAISE EXCEPTION 'Пользователь слишком мал, чтобы забронировать билет на этот фильм!'; END IF;
+	RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER add_update_reservation BEFORE INSERT OR UPDATE ON reservations
+    FOR EACH ROW EXECUTE PROCEDURE add_update_reservation();
+		
+CREATE OR REPLACE FUNCTION add_update_film_crew_member() RETURNS TRIGGER AS $$
+BEGIN
+	IF NEW.movie_id IS NULL THEN RAISE EXCEPTION 'Укажите фильм!'; END IF;
+	IF NEW.member_id IS NULL THEN RAISE EXCEPTION 'Укажите члена съемочной группы!'; END IF;
+	IF EXISTS (SELECT * FROM film_crew_members WHERE movie_id = NEW.movie_id AND member_id = NEW.member_id) THEN RAISE EXCEPTION 'Данный член съемочной группы уже добавлен!'; END IF;
+	RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER add_update_film_crew_member BEFORE INSERT OR UPDATE ON film_crew_members
+		FOR EACH ROW EXECUTE PROCEDURE add_update_film_crew_member();
+
+CREATE OR REPLACE FUNCTION add_update_age_rating() RETURNS TRIGGER AS $$
+BEGIN
+	IF NEW.rating_category IS NULL OR length(NEW.rating_category) = 0 THEN RAISE EXCEPTION 'Укажите категорию возрастного рейтинга!'; END IF;
+	IF length(NEW.rating_category) > 10 THEN RAISE EXCEPTION 'Слишком длинное название категории!'; END IF;
+	IF EXISTS (SELECT * FROM age_ratings ar WHERE ar.rating_category = NEW.rating_category AND CASE WHEN TG_OP = 'UPDATE' THEN ar.age_rating_id <> OLD.age_rating_id ELSE TRUE END) THEN RAISE EXCEPTION 'Категория % уже добавлена!', NEW.rating_category; END IF;
+	IF NEW.min_age IS NULL THEN RAISE EXCEPTION 'Укажите минимальный возраст!'; END IF;
+	IF NEW.min_age < 0 THEN RAISE EXCEPTION 'Минимальный возраст должен быть положительным числом или 0!'; END IF;
+	IF NEW.min_age > 30 THEN RAISE EXCEPTION 'Слишком большой минимальный возраст! Сбавьте хотя бы до 30...'; END IF;
+	RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER add_update_age_rating BEFORE INSERT OR UPDATE ON age_ratings
+    FOR EACH ROW EXECUTE PROCEDURE add_update_age_rating();

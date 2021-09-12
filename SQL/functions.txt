@@ -1,0 +1,492 @@
+CREATE OR REPLACE FUNCTION register(arg jsonb) RETURNS VOID AS $$
+BEGIN
+	IF arg->>'login' IS NULL THEN RAISE EXCEPTION 'Введите логин!'; END IF;
+  IF arg->>'password' IS NULL THEN RAISE EXCEPTION 'Введите пароль!'; END IF;
+	IF arg->>'role' IS NULL THEN 
+		INSERT INTO visitors (visitor_surname, visitor_name, visitor_patronymic, birth_date, visitor_login, visitor_password, role_id) VALUES (arg->>'surname', arg->>'name', arg->>'patronymic', (arg->>'birthDate')::date, arg->>'login', arg->>'password', (SELECT role_id FROM visitor_roles WHERE visitor_role = 'visitor'));
+	ELSE
+		INSERT INTO visitors (visitor_surname, visitor_name, visitor_patronymic, birth_date, visitor_login, visitor_password, role_id) VALUES (arg->>'surname', arg->>'name', arg->>'patronymic', (arg->>'birthDate')::date, arg->>'login', arg->>'password', arg->>'role');
+	END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION new_movie(arg jsonb) RETURNS int4 AS $$
+DECLARE
+	res int;
+BEGIN
+	IF NOT EXISTS (SELECT * FROM age_ratings ar WHERE ar.rating_category = arg->>'ratingCategory') THEN RAISE EXCEPTION 'Возрастной рейтинг % не найден!', arg->>'ratingCategory'; END IF;
+	INSERT INTO movies (title, duration, release_year, description, age_rating_id, cover_url, trailer_url) VALUES (arg->>'title', (arg->>'duration')::int4, (arg->>'releaseYear')::int4, arg->>'description', (SELECT age_rating_id FROM age_ratings ar WHERE ar.rating_category = arg->>'ratingCategory'), arg->>'coverUrl', arg->>'trailerUrl') RETURNING movie_id INTO res;
+	RETURN res;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION new_ticket(arg jsonb) RETURNS int4 AS $$
+DECLARE
+	res int4;
+BEGIN
+	IF NOT EXISTS (SELECT * FROM halls h WHERE h.hall_name = arg->>'hall') THEN RAISE EXCEPTION 'Зал % не найден!', arg->>'hall'; END IF;
+	IF NOT EXISTS (SELECT * FROM movies m WHERE m.movie_id = (arg->>'movieId')::int4) THEN RAISE EXCEPTION 'Фильм не найден!'; END IF; 
+	INSERT INTO tickets (begining, hall_id, movie_id, ticket_count, ticket_cost) VALUES ((arg->>'begining')::timestamp, (SELECT hall_id FROM halls h WHERE h.hall_name = arg->>'hall'), (arg->>'movieId')::int4, (arg->>'ticketCount')::int4, (arg->>'ticketCost')::decimal) RETURNING ticket_id INTO res;
+	RETURN res;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION new_crew_member(arg jsonb) RETURNS int4 AS $$
+DECLARE
+	res int4;
+BEGIN
+	IF NOT EXISTS (SELECT * FROM crew_roles WHERE crew_role_name=arg->>'role') THEN RAISE EXCEPTION 'Роль % не найдена!', arg->>'role'; END IF;
+	IF NOT EXISTS (SELECT * FROM crew_members WHERE member_surname=arg->>'surname' AND member_name=arg->>'name' AND member_patronymic=arg->>'patronymic' AND crew_role_id=(SELECT crew_role_id FROM crew_roles WHERE crew_role_name=arg->>'role')) THEN BEGIN
+		INSERT INTO crew_members (member_surname, member_name, member_patronymic, crew_role_id) VALUES (arg->>'surname', arg->>'name', arg->>'patronymic', (SELECT crew_role_id FROM crew_roles WHERE crew_role_name=arg->>'role')) RETURNING member_id INTO res;
+		RETURN res;
+		END;
+	ELSE
+		RETURN (SELECT member_id FROM crew_members WHERE member_surname=arg->>'surname' AND member_name=arg->>'name' AND member_patronymic=arg->>'patronymic' AND crew_role_id=(SELECT crew_role_id FROM crew_roles WHERE crew_role_name=arg->>'role'));
+	END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION set_member(member_id int4, movie_id int4) RETURNS VOID AS $$
+BEGIN
+	IF NOT EXISTS (SELECT * FROM film_crew_members fcm WHERE fcm.member_id=$1 AND fcm.movie_id=$2) THEN
+		INSERT INTO film_crew_members (member_id, movie_id) VALUES ($1, $2);
+	END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION unset_member(member_id int4, movie_id int4) RETURNS VOID AS $$
+BEGIN
+	DELETE FROM film_crew_members fcm WHERE fcm.member_id=$1 AND fcm.movie_id=$2;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION update_movie(arg jsonb) RETURNS VOID AS $$
+DECLARE params text;
+BEGIN
+	IF NOT arg ? 'id' THEN RAISE EXCEPTION 'Укажите редактируемый фильм!'; END IF;
+	IF arg ? 'newMember' THEN 
+		IF NOT EXISTS (SELECT * FROM film_crew_members WHERE member_id=arg->>'newMember' AND movie_id=arg->>'id') THEN 
+			INSERT INTO film_crew_members (member_id, movie_id) VALUES (arg->>'newMember', arg->>'id');
+		ELSE
+			RAISE EXCEPTION 'Данный сотрудник уже числится в съемочной команде!'; 
+		END IF;	
+	ELSE BEGIN
+		params := '';
+		IF arg ? 'title' THEN
+			params := concat('title=''',arg->>'title','''');
+		END IF;
+		IF arg ? 'duration' THEN
+			IF params <> '' THEN
+				params := concat(params, ', duration=''', arg->>'duration','''');
+			ELSE
+				params := concat('duration=''', arg->>'duration','''');
+			END IF;
+		END IF;	
+		IF arg ? 'releaseYear' THEN
+			IF params <> '' THEN
+				params := concat(params, ', release_year=''', arg->>'releaseYear','''');
+			ELSE
+				params := concat('release_year=''', arg->>'releaseYear','''');
+			END IF;
+		END IF;	
+		IF arg ? 'ratingCategory' THEN
+			IF params <> '' THEN
+				params := concat(params, ', age_rating_id=(SELECT age_rating_id FROM age_ratings WHERE rating_category=''', arg->>'ratingCategory',''')');
+			ELSE
+				params := concat('age_rating_id=(SELECT age_rating_id FROM age_ratings WHERE rating_category=''', arg->>'ratingCategory',''')');
+			END IF;
+		END IF;	
+		IF arg ? 'description' THEN
+			IF params <> '' THEN
+				params := concat(params, ', description=''', arg->>'description','''');
+			ELSE
+				params := concat('description=''', arg->>'description','''');
+			END IF;
+		END IF;	
+		IF arg ? 'cover' THEN
+			IF params <> '' THEN
+				IF arg->>'cover' <> 'NULL' THEN
+					params := concat(params, ', cover_url=''', arg->>'cover','''');
+				ELSE
+					params := concat(params, ', cover_url=NULL');
+				END IF;	
+			ELSE
+				IF arg->>'cover' <> 'NULL' THEN
+					params := concat('cover_url=''', arg->>'cover','''');
+				ELSE
+					params := concat('cover_url=NULL');
+				END IF;
+			END IF;
+		END IF;	
+		IF arg ? 'trailer' THEN
+			IF params <> '' THEN
+				IF arg->>'trailer' <> 'NULL' THEN
+					params := concat(params, ', trailer_url=''', arg->>'trailer','''');
+				ELSE
+					params := concat(params, ', trailer_url=NULL');
+				END IF;	
+			ELSE
+				IF arg->>'trailer' <> 'NULL' THEN
+					params := concat('trailer_url=''', arg->>'trailer','''');
+				ELSE
+					params := concat('trailer_url=NULL');
+				END IF;	
+			END IF;
+		END IF;
+		IF params <> '' THEN EXECUTE concat('UPDATE movies SET ', params, ' WHERE movie_id=''',arg->>'id',''''); END IF;
+	END;
+	END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION update_ticket(arg jsonb) RETURNS VOID AS $$
+DECLARE params text;
+BEGIN
+	IF NOT arg ? 'id' THEN RAISE EXCEPTION 'Укажите редактируемый билет!'; END IF;
+	params := '';
+	IF arg ? 'hall' THEN
+	BEGIN
+		IF NOT EXISTS(SELECT * FROM halls WHERE hall_name=arg->>'hall') THEN RAISE EXCEPTION 'Зала % не существует!', arg->>'hall'; END IF;
+		params := concat('hall_id=(SELECT hall_id FROM halls WHERE hall_name=''',arg->>'hall',''')');
+	END;
+	END IF;
+	IF arg ? 'begining' THEN
+		IF params <> '' THEN
+			params := concat(params, ', "begining"=''', arg->>'begining','''');
+		ELSE
+			params := concat('"begining"=''', arg->>'begining','''');
+		END IF;
+	END IF;
+	IF arg ? 'ticketCount' THEN
+		IF params <> '' THEN
+			params := concat(params, ', ticket_count=''', arg->>'ticketCount','''');
+		ELSE
+			params := concat('ticket_count=''', arg->>'ticketCount','''');
+		END IF;
+	END IF;
+	IF arg ? 'ticketCost' THEN
+		IF params <> '' THEN
+			params := concat(params, ', ticket_cost=''', arg->>'ticketCost','''');
+		ELSE
+			params := concat('ticket_cost=''', arg->>'ticketCost','''');
+		END IF;
+	END IF;
+	IF arg ? 'movieId' THEN
+	BEGIN
+		IF NOT EXISTS(SELECT * FROM movies WHERE movie_id=arg->>'movieId') THEN RAISE EXCEPTION 'Выбранный фильм не найден в базе данных!'; END IF;
+		IF params <> '' THEN
+			params := concat(params, ', movie_id=''', arg->>'movieId','''');
+		ELSE
+			params := concat('movie_id=''', arg->>'movieId','''');
+		END IF;
+	END;
+	END IF;
+	IF params <> '' THEN EXECUTE concat('UPDATE tickets SET ', params, ' WHERE ticket_id=''',arg->>'id',''''); END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION update_acc(arg jsonb) RETURNS VOID AS $$
+DECLARE params text;
+BEGIN
+	IF NOT arg ? 'id' THEN RAISE EXCEPTION 'Аккаунт не выбран!'; END IF;
+	params := '';
+	IF arg ? 'name' THEN 
+		params := concat('visitor_name=''', arg->>'name', ''''); 
+	END IF;
+	IF arg ? 'surname' THEN 
+		IF params <> '' THEN
+			IF arg->>'surname' <> 'NULL' THEN
+				params := concat(params, ', visitor_surname=''', arg->>'surname', '''');
+			ELSE
+				params := concat(params, ', visitor_surname=NULL');
+			END IF;	
+		ELSE
+			IF arg->>'surname' <> 'NULL' THEN
+				params := concat('visitor_surname=''', arg->>'surname', '''');
+			ELSE
+				params := concat('visitor_surname=NULL');
+			END IF;	
+		END IF;
+	END IF;	
+	IF arg ? 'patronymic' THEN 
+		IF params <> '' THEN
+			IF arg->>'patronymic' <> 'NULL' THEN
+				params := concat(params, ', visitor_patronymic=''', arg->>'patronymic', '''');
+			ELSE
+				params := concat(params, ', visitor_patronymic=NULL');
+			END IF;	
+		ELSE
+			IF arg->>'patronymic' <> 'NULL' THEN
+				params := concat('visitor_patronymic=''', arg->>'patronymic', '''');
+			ELSE
+				params := concat('visitor_patronymic=NULL');
+			END IF;	
+		END IF;
+	END IF;	
+	IF arg ? 'birthDate' THEN 
+		IF params <> '' THEN
+			params := concat(params, ', birth_date=''', arg->>'birthDate', '''');
+		ELSE
+			params := concat('birth_date=''', arg->>'birthDate', '''');
+		END IF;
+	END IF;	
+	IF params <> '' THEN
+		EXECUTE concat('UPDATE visitors SET ', params, ' WHERE visitor_id=''', arg->>'id', '''');
+	END IF;	
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION change_password(login varchar, old_pass varchar, new_pass varchar) RETURNS VOID AS $$
+BEGIN
+	IF NOT EXISTS(SELECT * FROM visitors v WHERE v.visitor_login=$1) THEN RAISE EXCEPTION 'Пользователь % не найден!', $1; END IF;
+	IF (SELECT v.visitor_password FROM visitors v WHERE v.visitor_login=$1) <> md5(old_pass) THEN RAISE EXCEPTION 'Неверный пароль!'; END IF;
+	UPDATE visitors SET visitor_password = new_pass WHERE visitor_login=$1;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION update_crew_member(arg jsonb) RETURNS VOID AS $$
+DECLARE params text;
+BEGIN
+	IF NOT arg ? 'id' THEN RAISE EXCEPTION 'Член съемочной группы не выбран!'; END IF;
+	params := '';
+	IF arg ? 'surname' THEN
+		params := concat('member_surname=''', arg->>'surname', '''');
+	END IF;
+  IF arg ? 'name' THEN 
+		IF param <> '' THEN
+			params := concat(', member_name=''', arg->>'name', '''');
+		ELSE
+			params := concat('member_name=''', arg->>'name', '''');
+		END IF;	
+	END IF;
+	IF arg ? 'patronymic' THEN 
+		IF param <> '' THEN
+			params := concat(', member_patronymic=''', arg->>'patronymic', '''');
+		ELSE
+			params := concat('member_patronymic=''', arg->>'patronymic', '''');
+		END IF;	
+	END IF;
+	IF arg ? 'role' THEN 
+	BEGIN
+	  IF NOT EXISTS (SELECT * FROM crew_roles WHERE crew_role_name=arg->>'role') THEN RAISE EXCEPTION 'Роль % не найдена!', arg->>'role'; END IF;
+		IF param <> '' THEN
+			params := concat(', crew_role_id=(SELECT crew_role_id FROM crew_roles WHERE crew_role_name=''', arg->>'role', ''')');
+		ELSE
+			params := concat('crew_role_id=(SELECT crew_role_id FROM crew_roles WHERE crew_role_name=''', arg->>'role', ''')');
+		END IF;
+	END;
+	END IF;
+	IF params <> '' THEN
+		EXECUTE concat('UPDATE crew_members SET ', params, ' WHERE member_id=''', arg->>'id', '''');
+	END IF;	
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION del_movie(movie_id int4) RETURNS VOID AS $$
+BEGIN
+	IF EXISTS (SELECT * FROM movies m WHERE m.movie_id = $1) THEN DELETE FROM movies m WHERE m.movie_id = $1; END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION del_ticket(ticket_id int4) RETURNS VOID AS $$
+BEGIN
+	IF EXISTS (SELECT * FROM tickets t WHERE t.ticket_id = $1) THEN DELETE FROM tickets t WHERE t.ticket_id = $1; END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION del_crew_member(crew_member_id int4) RETURNS VOID AS $$
+BEGIN
+	IF EXISTS (SELECT * FROM crew_members cm WHERE cm.member_id = $1) THEN DELETE FROM crew_members cm WHERE cm.member_id = $1; END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION del_acc(login varchar) RETURNS VOID AS $$
+BEGIN
+	IF EXISTS (SELECT * FROM visitors v WHERE v.visitor_login = $1) THEN DELETE FROM visitors v WHERE v.visitor_login = $1; END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION check_reserved(login varchar, ticket_id int4) RETURNS int4 AS $$
+BEGIN
+	IF EXISTS(SELECT * FROM reservations r WHERE r.ticket_id=$2 AND r.visitor_id=(SELECT v.visitor_id FROM visitors v WHERE v.visitor_login=$1)) THEN
+			RETURN (SELECT r.reservation_id FROM reservations r WHERE r.ticket_id=$2 AND r.visitor_id=(SELECT v.visitor_id FROM visitors v WHERE v.visitor_login=$1));
+		ELSE
+			RETURN -1;
+		END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION reserve(ticket_id int4, visitor varchar) RETURNS int4 AS $$
+DECLARE
+	res int4;
+BEGIN
+	IF NOT EXISTS (SELECT * FROM tickets t WHERE t.ticket_id = $1) THEN RAISE EXCEPTION 'Сеанс не найден!'; END IF;
+	IF NOT EXISTS (SELECT * FROM visitors v WHERE v.visitor_login = $2) THEN RAISE EXCEPTION 'Пользователь % не найден!', visitor; END IF;
+		IF (SELECT t.ticket_count FROM tickets t WHERE t.ticket_id = $1) = 0 THEN RAISE EXCEPTION 'На этот сеанс больше нет билетов!'; END IF;
+		UPDATE tickets SET ticket_count=ticket_count - 1 WHERE tickets.ticket_id = $1;
+		INSERT INTO reservations (ticket_id, visitor_id) VALUES ($1, (SELECT v.visitor_id FROM visitors v WHERE v.visitor_login = $2)) RETURNING reservation_id INTO res;
+		RETURN res;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION unreserve(reserve_id int4) RETURNS VOID AS $$
+BEGIN
+	IF EXISTS (SELECT * FROM reservations r WHERE r.reservation_id = $1) THEN DELETE FROM reservations r WHERE r.reservation_id = $1; ELSE RAISE EXCEPTION 'Бронь не найдена!'; END IF;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE OR REPLACE FUNCTION get_film_crew(movie_id int4) RETURNS SETOF crew_rec AS $$
+BEGIN
+	IF NOT EXISTS (SELECT * FROM movies m WHERE m.movie_id = $1) THEN RAISE EXCEPTION 'Указанный фильм не найден!'; END IF;
+	RETURN QUERY SELECT cm.member_id, cm.member_surname, cm.member_name, cm.member_patronymic, cr.crew_role_name FROM crew_members cm RIGHT JOIN film_crew_members fcm USING (member_id) LEFT JOIN crew_roles cr USING (crew_role_id) WHERE fcm.movie_id = $1;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION get_user_data(user_login varchar) RETURNS SETOF user_rec AS $$
+BEGIN
+	IF NOT EXISTS (SELECT * FROM visitors WHERE visitor_login=user_login) THEN RAISE EXCEPTION 'Пользователь % не зарегистрирован!', user_login; END IF;
+	RETURN QUERY SELECT v.visitor_id, v.visitor_login, v.visitor_surname, v.visitor_name, v.visitor_patronymic, v.birth_date, v.register_date, vr.visitor_role FROM visitors v LEFT JOIN visitor_roles vr USING(role_id) WHERE v.visitor_login = user_login;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION verify_user(login varchar, pass varchar) RETURNS boolean AS $$
+BEGIN
+	RETURN EXISTS (SELECT * FROM visitors WHERE visitor_login=$1 AND visitor_password=md5($2));
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION has_rights(login varchar) RETURNS boolean AS $$
+BEGIN
+	RETURN (SELECT r.visitor_role FROM visitors v RIGHT JOIN visitor_roles r USING (role_id) WHERE visitor_login=$1) <> 'visitor';
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION is_admin(login varchar) RETURNS boolean AS $$
+BEGIN
+	RETURN (SELECT r.visitor_role FROM visitors v RIGHT JOIN visitor_roles r USING (role_id) WHERE visitor_login=$1) = 'supreme_admin';
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION get_movie(id int4) RETURNS SETOF movie_rec AS $$ 
+BEGIN
+	RETURN QUERY SELECT * FROM view_movies WHERE movie_id=$1;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION get_ticket(id int4) RETURNS SETOF ticket_rec AS $$ 
+BEGIN
+	RETURN QUERY SELECT * FROM view_tickets WHERE ticket_id=$1;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION get_crew_roles() RETURNS SETOF VARCHAR AS $$
+BEGIN
+	RETURN QUERY SELECT crew_role_name FROM crew_roles;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION view_movies("search" varchar, page int4, page_size int4) RETURNS SETOF movie_rec AS $$
+DECLARE movie_query text;
+BEGIN
+	movie_query := 'SELECT * FROM view_movies m';
+	IF "search" IS NOT NULL THEN
+		IF "search" <> '' THEN
+			movie_query := concat(movie_query, ' WHERE m.title SIMILAR TO ''%', "search", '%'' OR m.description SIMILAR TO ''%', "search", '%'' OR EXISTS (SELECT * FROM film_crew_members fcm LEFT JOIN crew_members cm USING (member_id) WHERE fcm.movie_id=m.movie_id AND (cm.member_surname SIMILAR TO ''%', "search", '%'' OR cm.member_name SIMILAR TO ''%', "search", '%'' OR cm.member_patronymic SIMILAR TO ''%', "search", '%''))');
+		END IF;
+	END IF;
+	IF page_size IS NOT NULL THEN
+		movie_query := concat(movie_query, ' LIMIT ', page_size);
+		IF page IS NOT NULL THEN
+			movie_query := concat(movie_query, ' OFFSET ', (page * page_size));
+		END IF;	
+	END IF;
+	RETURN QUERY EXECUTE movie_query;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION view_tickets(arg jsonb, page int4, page_size int4) RETURNS SETOF ticket_rec AS $$
+DECLARE params text;
+DECLARE pagination text;
+BEGIN
+	params := '';
+	IF arg ? 'date' THEN
+		IF arg ? 'dateOp' THEN
+			IF NOT (arg->>'dateOp' = '>' OR arg->>'dateOp' = '<' OR arg->>'dateOp' = '>=' OR arg->>'dateOp' = '<=' OR arg->>'dateOp' = '=') THEN RAISE EXCEPTION 'Неподдерживаемый оператор: %', arg->>'dateOp'; END IF;
+				params := concat('t.begining::date ', arg->>'dateOp', ' ''', arg->>'date', '''');
+		ELSE
+				params := concat('t.begining::date=''', arg->>'date', '''');
+		END IF;
+	END IF;	
+	IF arg ? 'time' THEN
+		IF arg ? 'timeOp' THEN
+			IF NOT (arg->>'timeOp' = '>' OR arg->>'timeOp' = '<' OR arg->>'timeOp' = '>=' OR arg->>'timeOp' = '<=' OR arg->>'timeOp' = '=') THEN RAISE EXCEPTION 'Неподдерживаемый оператор: %', arg->>'timeOp'; END IF;
+			IF params <> '' THEN
+				params := concat(params, ' AND t.begining::time ', arg->>'timeOp', ' ''', arg->>'time', '''');
+			ELSE	
+				params := concat('t.begining::time ', arg->>'timeOp', ' ''', arg->>'time', '''');
+			END IF;	
+		ELSE
+			IF params <> '' THEN
+				params := concat(params, ' AND t.begining::time=''', arg->>'time', '''');
+			ELSE	
+				params := concat('t.begining::time=''', arg->>'time', '''');
+			END IF;
+		END IF;
+	END IF;	
+	IF arg ? 'cost' THEN
+		IF arg ? 'costOp' THEN
+			IF NOT (arg->>'costOp' = '>' OR arg->>'costOp' = '<' OR arg->>'costOp' = '>=' OR arg->>'costOp' = '<=' OR arg->>'costOp' = '=') THEN RAISE EXCEPTION 'Неподдерживаемый оператор: %', arg->>'costOp'; END IF;
+			IF params <> '' THEN
+				params := concat(params, ' and t.ticket_cost ', arg->>'costOp', ' ''', arg->>'cost', '''');
+			ELSE	
+				params := concat('t.ticket_cost ', arg->>'cost_op', ' ''', arg->>'cost', '''');
+			END IF;	
+		ELSE
+			IF params <> '' THEN
+				params := concat(params, ' and t.ticket_cost=''', arg->>'cost', '''');
+			ELSE
+				params := concat('t.ticket_cost=''', arg->>'cost', '''');
+			END IF;	
+		END IF;
+	END IF;	
+	IF arg ? 'present' THEN
+		IF params <> '' THEN
+			params := concat(params, ' and t.ticket_count > 0');
+		ELSE
+			params := 't.ticket_count > 0';
+		END IF;
+	END IF;
+	IF arg ? 'reserved' THEN
+		IF params <> '' THEN
+			params := concat(params, ' and t.ticket_id IN (SELECT r.ticket_id FROM reservations r WHERE r.visitor_id=(SELECT v.visitor_id FROM visitors v WHERE v.visitor_login=''', arg->>'reserved', '''))');
+		ELSE
+			params := concat('t.ticket_id IN (SELECT r.ticket_id FROM reservations r WHERE r.visitor_id=(SELECT v.visitor_id FROM visitors v WHERE v.visitor_login=''', arg->>'reserved', '''))');
+		END IF;
+	END IF;
+	IF arg ? 'hall' THEN
+		IF params <> '' THEN
+			params := concat(params, ' AND t.hall_name=''', arg->>'hall', '''');
+		ELSE
+			params := concat('t.hall_name=''', arg->>'hall', '''');
+		END IF;
+	END IF;
+	IF arg ? 'movieId' THEN
+		IF params <> '' THEN
+			params := concat(params, ' AND t.movie_id=''', arg->>'movieId', '''');
+		ELSE
+			params := concat('t.movie_id=''', arg->>'movieId', '''');
+		END IF;
+	END IF;
+	IF page_size IS NOT NULL THEN
+		pagination := concat(pagination, ' LIMIT ', page_size);
+		IF page IS NOT NULL THEN
+			pagination := concat(pagination, ' OFFSET ', (page * page_size));
+		END IF;	
+	END IF;
+	IF params <> '' THEN
+		RETURN QUERY EXECUTE concat('SELECT * FROM view_tickets t WHERE ', params, pagination);
+	ELSE
+		RETURN QUERY EXECUTE concat('SELECT * FROM view_tickets t', pagination);
+	END IF;	
+END;
+$$ LANGUAGE plpgsql;

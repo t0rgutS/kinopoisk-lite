@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.kinopoisklite.view.MovieAdd">
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorBlack"
+        android:orientation="vertical">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageButton
+                    android:id="@+id/back"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@id/cover"
+                    android:background="@color/colorBlack"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginBottom="10dp"
+                    android:src="?attr/homeAsUpIndicator" />
+
+                <EditText
+                    android:id="@+id/description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/descriptionView"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="10dp"
+                    android:backgroundTint="@color/colorDarkGreen"
+                    android:ems="10"
+                    android:gravity="start|top"
+                    android:inputType="textMultiLine"
+                    android:textColor="@color/colorGreen" />
+
+                <TextView
+                    android:id="@+id/descriptionView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/cover"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="20dp"
+                    android:text="@string/description_text"
+                    android:textColor="@color/colorGreen" />
+
+                <Spinner
+                    android:id="@+id/ageRating"
+                    style="@style/Widget.AppCompat.Spinner.Underlined"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/duration"
+                    android:layout_toRightOf="@id/ratingView"
+                    android:backgroundTint="@color/colorDarkGreen" />
+
+                <TextView
+                    android:id="@+id/ratingView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/durationView"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_toRightOf="@id/cover"
+                    android:text="@string/rating_text"
+                    android:textColor="@color/colorGreen" />
+
+                <EditText
+                    android:id="@+id/duration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/releaseYear"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_toRightOf="@id/durationView"
+                    android:backgroundTint="@color/colorDarkGreen"
+                    android:ems="10"
+                    android:inputType="number"
+                    android:text=""
+                    android:textColor="@color/colorGreen" />
+
+                <TextView
+                    android:id="@+id/durationView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/releaseYearView"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="35dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_toRightOf="@id/cover"
+                    android:text="@string/duration_text"
+                    android:textColor="@color/colorGreen" />
+
+                <EditText
+                    android:id="@+id/releaseYear"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/title"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_toRightOf="@id/releaseYearView"
+                    android:backgroundTint="@color/colorDarkGreen"
+                    android:ems="10"
+                    android:inputType="number"
+                    android:text=""
+                    android:textColor="@color/colorGreen" />
+
+                <TextView
+                    android:id="@+id/releaseYearView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/title"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_toRightOf="@id/cover"
+                    android:text="@string/release_year_text"
+                    android:textColor="@color/colorGreen" />
+
+                <ImageView
+                    android:id="@+id/cover"
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
+                    android:layout_below="@id/title"
+                    android:layout_marginLeft="5dp"
+                    android:scaleType="fitXY"
+                    app:srcCompat="@android:drawable/ic_menu_report_image" />
+
+                <EditText
+                    android:id="@+id/title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="5dp"
+                    android:backgroundTint="@color/colorDarkGreen"
+                    android:hint="@string/title_text"
+                    android:textColor="@color/colorGreen"
+                    android:textColorHint="@color/colorGreen"
+                    android:textSize="20dp" />
+
+            </RelativeLayout>
+        </ScrollView>
+
+        <com.google.android.material.bottomappbar.BottomAppBar
+            android:id="@+id/bottom_app_bar"
+            style="@style/Widget.MaterialComponents.BottomAppBar.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:backgroundTint="@color/colorDarkGreen"
+            app:hideOnScroll="true" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/colorDarkGreen"
+            android:clickable="true"
+            android:src="@android:drawable/ic_input_add"
+            app:layout_anchor="@+id/bottom_app_bar"
+            app:layout_anchorGravity="center_horizontal" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</FrameLayout>

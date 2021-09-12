@@ -1,0 +1,9 @@
+Options All -Indexes
+<Files db_credentials> 
+  Order Allow,Deny
+  Deny from all
+</Files>
+<Files key>  
+  Order Allow,Deny
+  Deny from all
+</Files>

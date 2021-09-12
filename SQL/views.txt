@@ -1,0 +1,5 @@
+CREATE OR REPLACE VIEW view_movies AS (SELECT m.movie_id, m.title, m.release_year, m.duration, m.description, m.cover_url, m.trailer_url, ar.rating_category FROM movies m LEFT JOIN age_ratings ar USING (age_rating_id));
+
+CREATE OR REPLACE VIEW view_tickets AS (SELECT t.ticket_id, t.movie_id, t.begining, h.hall_name, m.title, m.release_year, t.ticket_count, t.ticket_cost FROM tickets t LEFT JOIN halls h USING (hall_id) LEFT JOIN movies m USING (movie_id));
+
+CREATE OR REPLACE VIEW view_user_tickets AS (SELECT t.ticket_id, t.movie_id, t.begining, t.hall_name, t.title, t.release_year, v.visitor_login FROM view_tickets t RIGHT JOIN reservations r USING (ticket_id) LEFT JOIN visitors v USING (visitor_id));

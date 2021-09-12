@@ -1,0 +1,5 @@
+CREATE TYPE movie_rec AS (movie_id int4, title varchar, release_year int4, duration int4, description text, cover_url varchar, trailer_url varchar, rating_category varchar);
+
+CREATE TYPE ticket_rec AS (ticket_id int4, movie_id int4, begining timestamp, hall_name varchar, title varchar, release_year int4, ticket_count int4, ticket_cost decimal);
+
+CREATE TYPE crew_rec AS (member_id int4, member_surname varchar, member_name varchar, member_patronymic varchar, crew_role_name varchar);

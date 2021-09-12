@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/border"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/title_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorGreen"
+        android:textColorHint="@color/colorGreen"
+        android:hint="@string/title_text"
+        android:textSize="25sp"
+        android:layout_marginBottom="10dp"/>
+    <TextView
+        android:id="@+id/age_rating_view"
+        android:hint="@string/rating_text"
+        android:textColor="@color/colorGreen"
+        android:textColorHint="@color/colorGreen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:layout_marginBottom="10dp"
+        android:textAlignment="center"/>
+    <TextView
+        android:id="@+id/release_year_view"
+        android:textColor="@color/colorGreen"
+        android:textColorHint="@color/colorGreen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="@string/release_year_text"
+        android:layout_marginBottom="10dp"/>
+    <TextView
+        android:id="@+id/duration_view"
+        android:textColor="@color/colorGreen"
+        android:textColorHint="@color/colorGreen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="@string/duration_text"
+        android:layout_marginBottom="10dp"/>
+    <TextView
+        android:id="@+id/more"
+        android:textColor="@color/colorGreen"
+        android:textColorHint="@color/colorGreen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/more_about"
+        android:layout_gravity="end"/>
+
+</LinearLayout>

@@ -16,6 +16,7 @@ import androidx.navigation.Navigation;
 
 import com.kinopoisklite.R;
 import com.kinopoisklite.databinding.MovieAddFragmentBinding;
+import com.kinopoisklite.exception.PersistenceException;
 import com.kinopoisklite.model.entity.AgeRating;
 import com.kinopoisklite.view.adapter.AgeRatingAdapter;
 import com.kinopoisklite.viewModel.MovieAddViewModel;
@@ -52,11 +53,17 @@ public class MovieAdd extends Fragment {
                 if (!(binding.title.getText().toString().isEmpty() ||
                         binding.releaseYear.getText().toString().isEmpty() ||
                         binding.duration.getText().toString().isEmpty())) {
-                    mViewModel.addMovie(binding.title.getText().toString(),
-                            binding.releaseYear.getText().toString(),
-                            binding.duration.getText().toString(),
-                            binding.description.getText().toString(),
-                            ((AgeRating) binding.ageRating.getSelectedItem()).getRatingCategory());
+                    try {
+                        mViewModel.addMovie(binding.title.getText().toString(),
+                                binding.releaseYear.getText().toString(),
+                                binding.duration.getText().toString(),
+                                binding.description.getText().toString(),
+                                ((AgeRating) binding.ageRating.getSelectedItem()));
+                    } catch (PersistenceException e) {
+                        e.printStackTrace();
+                        Toast.makeText(getContext(), e.getMessage(),
+                                Toast.LENGTH_LONG).show();
+                    }
                     Navigation.findNavController(v).popBackStack();
                 } else
                     Toast.makeText(getContext(), "Заполните все обязательные поля!",

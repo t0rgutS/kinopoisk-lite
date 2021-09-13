@@ -1,14 +1,14 @@
 package com.kinopoisklite.viewModel;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.kinopoisklite.model.dto.MovieDTO;
+import com.kinopoisklite.exception.PersistenceException;
+import com.kinopoisklite.model.dto.MovieDTOFactory;
 import com.kinopoisklite.model.entity.AgeRating;
+import com.kinopoisklite.model.entity.Movie;
 import com.kinopoisklite.repository.RepositoryManager;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public class MovieAddViewModel extends ViewModel {
@@ -18,14 +18,13 @@ public class MovieAddViewModel extends ViewModel {
     }
 
     public void addMovie(String title, String releaseYear, String duration,
-                         String description, String ratingCategory) {
-        MovieDTO newMovie = new MovieDTO();
-        newMovie.setId(0L);
-        newMovie.setTitle(title);
-        newMovie.setReleaseYear(releaseYear != null ? Integer.parseInt(releaseYear) : LocalDateTime.now().getYear());
-        newMovie.setDuration(duration != null ? Integer.parseInt(duration) : 0);
-        newMovie.setDescription(description);
-        newMovie.setRatingCategory(ratingCategory);
-        RepositoryManager.getRepository().addMovie(newMovie);
+                         String description, AgeRating rating) throws PersistenceException {
+        try {
+            Movie newMovie = MovieDTOFactory.formMovieDTO(title, releaseYear, duration,
+                    description, rating);
+            RepositoryManager.getRepository().addMovie(newMovie);
+        } catch (Exception e) {
+            throw new PersistenceException(e.getMessage());
+        }
     }
 }

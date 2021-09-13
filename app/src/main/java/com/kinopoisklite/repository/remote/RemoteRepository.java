@@ -6,7 +6,7 @@ import android.os.Looper;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.kinopoisklite.model.dto.MovieDTO;
+import com.kinopoisklite.model.dto.remote.RemoteMovieDTO;
 import com.kinopoisklite.model.entity.AgeRating;
 import com.kinopoisklite.model.entity.Movie;
 import com.kinopoisklite.repository.Repository;
@@ -42,7 +42,7 @@ public class RemoteRepository implements Repository {
                         .getOperator().get("http://192.168.56.1/CourseMobile/movies.php");
                 for (int i = 0; i < jsonMovies.length(); i++) {
                     try {
-                        MovieDTO movie = new MovieDTO(jsonMovies.getJSONObject(i));
+                        RemoteMovieDTO movie = new RemoteMovieDTO(jsonMovies.getJSONObject(i));
                         if (!listMovies.contains(movie))
                             listMovies.add(movie);
                     } catch (JSONException e) {

@@ -1,4 +1,4 @@
-package com.kinopoisklite.model.dto;
+package com.kinopoisklite.model.dto.remote;
 
 import androidx.annotation.NonNull;
 
@@ -16,10 +16,10 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class MovieDTO extends Movie {
+public class RemoteMovieDTO extends Movie {
     private String ratingCategory;
 
-    public MovieDTO(JSONObject object) throws JSONException {
+    public RemoteMovieDTO(JSONObject object) throws JSONException {
         id = object.getLong("id");
         title = object.getString("title");
         releaseYear = object.getInt("releaseYear");

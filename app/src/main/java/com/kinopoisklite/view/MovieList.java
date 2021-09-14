@@ -62,7 +62,7 @@ public class MovieList extends Fragment {
                 mViewModel.deleteMovie(((MovieListAdapter)
                         binding.movieListView.getAdapter()).getMovies().get(position));
             }
-        });
+        }).attachToRecyclerView(binding.movieListView);
         return binding.getRoot();
     }
 

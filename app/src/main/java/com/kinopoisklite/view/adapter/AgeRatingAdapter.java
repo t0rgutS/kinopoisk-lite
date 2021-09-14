@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.kinopoisklite.R;
 import com.kinopoisklite.model.entity.AgeRating;
 
 import java.util.List;
@@ -32,7 +33,9 @@ public class AgeRatingAdapter extends ArrayAdapter<AgeRating> {
         AgeRating rating = ageRatings.get(position);
         if(convertView == null)
             convertView = LayoutInflater.from(context).inflate(resource, null);
-        ((TextView) convertView).setText(rating.getRatingCategory());
+        TextView textView = (TextView) convertView;
+        textView.setTextColor(context.getResources().getColor(R.color.colorGreen));
+        textView.setText(rating.getRatingCategory());
         return convertView;
     }
 }

@@ -49,7 +49,7 @@ public abstract class MovieRoomDatabase extends RoomDatabase {
                             .addCallback(new RoomDatabase.Callback() {
                                 @Override
                                 public void onOpen(@NonNull SupportSQLiteDatabase db) {
-                                    super.onOpen(db);
+                                    super.onCreate(db);
                                     executorService.execute(() -> {
                                         initialRatings.forEach(initialRating -> {
                                             if (!INSTANCE.ageRatingDAO().isRatingExists(initialRating.getId()))

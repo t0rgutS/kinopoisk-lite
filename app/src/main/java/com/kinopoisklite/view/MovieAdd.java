@@ -16,7 +16,7 @@ import androidx.navigation.Navigation;
 
 import com.kinopoisklite.R;
 import com.kinopoisklite.databinding.MovieAddFragmentBinding;
-import com.kinopoisklite.model.entity.AgeRating;
+import com.kinopoisklite.model.AgeRating;
 import com.kinopoisklite.view.adapter.AgeRatingAdapter;
 import com.kinopoisklite.viewModel.MovieAddViewModel;
 

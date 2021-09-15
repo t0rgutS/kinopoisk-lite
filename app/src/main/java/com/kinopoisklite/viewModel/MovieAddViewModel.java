@@ -1,12 +1,11 @@
 package com.kinopoisklite.viewModel;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.kinopoisklite.model.dto.MovieDTO;
-import com.kinopoisklite.model.entity.AgeRating;
+import com.kinopoisklite.model.AgeRating;
 import com.kinopoisklite.repository.RepositoryManager;
+import com.kinopoisklite.repository.remote.model.MovieDTO;
 
 import java.time.LocalDateTime;
 import java.util.List;

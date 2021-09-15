@@ -1,10 +1,10 @@
-package com.kinopoisklite.model.dto;
+package com.kinopoisklite.repository.remote.model;
 
 import androidx.annotation.NonNull;
 
 import com.google.gson.Gson;
-import com.kinopoisklite.model.entity.AgeRating;
-import com.kinopoisklite.model.entity.Movie;
+import com.kinopoisklite.model.AgeRating;
+import com.kinopoisklite.model.Movie;
 
 import org.json.JSONException;
 import org.json.JSONObject;

@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.kinopoisklite.R;
 import com.kinopoisklite.databinding.MovieListFragmentBinding;
-import com.kinopoisklite.model.entity.Movie;
+import com.kinopoisklite.model.Movie;
 import com.kinopoisklite.view.adapter.MovieListAdapter;
 import com.kinopoisklite.viewModel.MovieListViewModel;
 

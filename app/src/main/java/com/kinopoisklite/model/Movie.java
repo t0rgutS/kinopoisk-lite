@@ -1,4 +1,4 @@
-package com.kinopoisklite.model.entity;
+package com.kinopoisklite.model;
 
 import androidx.annotation.NonNull;
 

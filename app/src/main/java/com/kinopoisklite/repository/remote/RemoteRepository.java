@@ -6,9 +6,9 @@ import android.os.Looper;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.kinopoisklite.model.dto.MovieDTO;
-import com.kinopoisklite.model.entity.AgeRating;
-import com.kinopoisklite.model.entity.Movie;
+import com.kinopoisklite.repository.remote.model.MovieDTO;
+import com.kinopoisklite.model.AgeRating;
+import com.kinopoisklite.model.Movie;
 import com.kinopoisklite.repository.Repository;
 
 import org.json.JSONArray;

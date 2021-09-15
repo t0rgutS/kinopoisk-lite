@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.kinopoisklite.databinding.MovieListElementBinding;
-import com.kinopoisklite.model.entity.Movie;
+import com.kinopoisklite.model.Movie;
 
 import java.util.List;
 

@@ -2,8 +2,8 @@ package com.kinopoisklite.repository;
 
 import androidx.lifecycle.LiveData;
 
-import com.kinopoisklite.model.entity.AgeRating;
-import com.kinopoisklite.model.entity.Movie;
+import com.kinopoisklite.model.AgeRating;
+import com.kinopoisklite.model.Movie;
 
 import java.util.List;
 

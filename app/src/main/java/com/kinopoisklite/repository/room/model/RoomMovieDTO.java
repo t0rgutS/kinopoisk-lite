@@ -4,7 +4,7 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 
 import com.kinopoisklite.model.entity.AgeRating;
-import com.kinopoisklite.model.entity.Movie;
+import com.kinopoisklite.model.Movie;
 
 import org.jetbrains.annotations.NotNull;
 

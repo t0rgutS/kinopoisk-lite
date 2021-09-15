@@ -4,9 +4,9 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.kinopoisklite.exception.PersistenceException;
-import com.kinopoisklite.model.dto.MovieDTOFactory;
+import com.kinopoisklite.repository.MovieDTOFactory;
 import com.kinopoisklite.model.entity.AgeRating;
-import com.kinopoisklite.model.entity.Movie;
+import com.kinopoisklite.model.Movie;
 import com.kinopoisklite.repository.RepositoryManager;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.kinopoisklite.model.entity;
+package com.kinopoisklite.model;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Ignore;

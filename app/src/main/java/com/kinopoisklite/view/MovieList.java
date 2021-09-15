@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -18,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.kinopoisklite.R;
 import com.kinopoisklite.databinding.MovieListFragmentBinding;
-import com.kinopoisklite.model.entity.Movie;
+import com.kinopoisklite.model.Movie;
 import com.kinopoisklite.view.adapter.MovieListAdapter;
 import com.kinopoisklite.viewModel.MovieListViewModel;
 

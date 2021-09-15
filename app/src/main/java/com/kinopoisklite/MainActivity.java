@@ -4,8 +4,8 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.kinopoisklite.model.dto.MovieDTOFactory;
-import com.kinopoisklite.model.dto.dtoVersion;
+import com.kinopoisklite.repository.MovieDTOFactory;
+import com.kinopoisklite.repository.dtoVersion;
 import com.kinopoisklite.repository.RepositoryManager;
 
 public class MainActivity extends AppCompatActivity {

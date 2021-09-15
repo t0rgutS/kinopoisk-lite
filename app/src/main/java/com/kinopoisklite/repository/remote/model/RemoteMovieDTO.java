@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.google.gson.Gson;
 import com.kinopoisklite.model.entity.AgeRating;
-import com.kinopoisklite.model.entity.Movie;
+import com.kinopoisklite.model.Movie;
 
 import org.json.JSONException;
 import org.json.JSONObject;

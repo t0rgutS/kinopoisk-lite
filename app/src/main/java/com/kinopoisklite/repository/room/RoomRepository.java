@@ -7,7 +7,7 @@ import androidx.lifecycle.Transformations;
 
 import com.kinopoisklite.repository.room.model.RoomMovieDTO;
 import com.kinopoisklite.model.entity.AgeRating;
-import com.kinopoisklite.model.entity.Movie;
+import com.kinopoisklite.model.Movie;
 import com.kinopoisklite.repository.Repository;
 import com.kinopoisklite.repository.room.dao.AgeRatingDAO;
 import com.kinopoisklite.repository.room.dao.MovieDAO;

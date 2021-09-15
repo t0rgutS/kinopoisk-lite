@@ -8,7 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.kinopoisklite.repository.remote.model.RemoteMovieDTO;
 import com.kinopoisklite.model.entity.AgeRating;
-import com.kinopoisklite.model.entity.Movie;
+import com.kinopoisklite.model.Movie;
 import com.kinopoisklite.repository.Repository;
 
 import org.json.JSONArray;

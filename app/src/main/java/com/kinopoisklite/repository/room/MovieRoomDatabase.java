@@ -9,7 +9,7 @@ import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.kinopoisklite.repository.room.model.RoomMovieDTO;
-import com.kinopoisklite.model.entity.AgeRating;
+import com.kinopoisklite.model.AgeRating;
 import com.kinopoisklite.repository.room.dao.AgeRatingDAO;
 import com.kinopoisklite.repository.room.dao.MovieDAO;
 

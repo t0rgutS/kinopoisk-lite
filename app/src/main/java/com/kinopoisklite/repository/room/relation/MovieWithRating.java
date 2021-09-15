@@ -4,7 +4,7 @@ import androidx.room.Embedded;
 import androidx.room.Relation;
 
 import com.kinopoisklite.repository.room.model.RoomMovieDTO;
-import com.kinopoisklite.model.entity.AgeRating;
+import com.kinopoisklite.model.AgeRating;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.kinopoisklite.R;
-import com.kinopoisklite.model.entity.AgeRating;
+import com.kinopoisklite.model.AgeRating;
 
 import java.util.List;
 

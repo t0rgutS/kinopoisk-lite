@@ -2,7 +2,7 @@ package com.kinopoisklite.repository;
 
 import com.kinopoisklite.repository.remote.model.RemoteMovieDTO;
 import com.kinopoisklite.repository.room.model.RoomMovieDTO;
-import com.kinopoisklite.model.entity.AgeRating;
+import com.kinopoisklite.model.AgeRating;
 import com.kinopoisklite.model.Movie;
 
 import java.time.LocalDateTime;

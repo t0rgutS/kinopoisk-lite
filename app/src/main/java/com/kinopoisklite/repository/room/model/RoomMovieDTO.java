@@ -3,7 +3,7 @@ package com.kinopoisklite.repository.room.model;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 
-import com.kinopoisklite.model.entity.AgeRating;
+import com.kinopoisklite.model.AgeRating;
 import com.kinopoisklite.model.Movie;
 
 import org.jetbrains.annotations.NotNull;

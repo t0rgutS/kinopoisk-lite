@@ -1,4 +1,4 @@
-package com.kinopoisklite.model.dto.room;
+package com.kinopoisklite.repository.room.model;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;

@@ -5,7 +5,7 @@ import android.app.Application;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
 
-import com.kinopoisklite.model.dto.room.RoomMovieDTO;
+import com.kinopoisklite.repository.room.model.RoomMovieDTO;
 import com.kinopoisklite.model.entity.AgeRating;
 import com.kinopoisklite.model.entity.Movie;
 import com.kinopoisklite.repository.Repository;

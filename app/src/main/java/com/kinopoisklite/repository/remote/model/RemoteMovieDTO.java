@@ -1,4 +1,4 @@
-package com.kinopoisklite.model.dto.remote;
+package com.kinopoisklite.repository.remote.model;
 
 import androidx.annotation.NonNull;
 

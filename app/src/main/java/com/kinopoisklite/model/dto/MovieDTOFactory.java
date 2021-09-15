@@ -1,7 +1,7 @@
 package com.kinopoisklite.model.dto;
 
-import com.kinopoisklite.model.dto.remote.RemoteMovieDTO;
-import com.kinopoisklite.model.dto.room.RoomMovieDTO;
+import com.kinopoisklite.repository.remote.model.RemoteMovieDTO;
+import com.kinopoisklite.repository.room.model.RoomMovieDTO;
 import com.kinopoisklite.model.entity.AgeRating;
 import com.kinopoisklite.model.entity.Movie;
 

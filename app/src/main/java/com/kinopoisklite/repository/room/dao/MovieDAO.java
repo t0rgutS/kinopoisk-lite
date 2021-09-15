@@ -7,7 +7,7 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Transaction;
 
-import com.kinopoisklite.model.dto.room.RoomMovieDTO;
+import com.kinopoisklite.repository.room.model.RoomMovieDTO;
 import com.kinopoisklite.repository.room.relation.MovieWithRating;
 
 import java.util.List;

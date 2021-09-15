@@ -3,7 +3,7 @@ package com.kinopoisklite.repository.room.relation;
 import androidx.room.Embedded;
 import androidx.room.Relation;
 
-import com.kinopoisklite.model.dto.room.RoomMovieDTO;
+import com.kinopoisklite.repository.room.model.RoomMovieDTO;
 import com.kinopoisklite.model.entity.AgeRating;
 
 import lombok.Getter;

@@ -48,7 +48,7 @@ public abstract class MovieRoomDatabase extends RoomDatabase {
                             MovieRoomDatabase.class, "KinopoiskLiteBase")
                             .addCallback(new RoomDatabase.Callback() {
                                 @Override
-                                public void onOpen(@NonNull SupportSQLiteDatabase db) {
+                                public void onCreate(@NonNull SupportSQLiteDatabase db) {
                                     super.onCreate(db);
                                     executorService.execute(() -> {
                                         initialRatings.forEach(initialRating -> {

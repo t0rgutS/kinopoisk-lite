@@ -7,16 +7,16 @@
 
     <fragment
         android:id="@+id/movieList"
-        android:name="com.kinopoisklite.view.MovieList"
+        android:name="com.kinopoisklite.view.MovieListView"
         android:label="movie_list_fragment"
         tools:layout="@layout/movie_list_fragment" >
         <action
-            android:id="@+id/action_movieList_to_movieAdd"
-            app:destination="@id/movieAdd" />
+            android:id="@+id/action_movieList_to_movie"
+            app:destination="@id/movie" />
     </fragment>
     <fragment
-        android:id="@+id/movieAdd"
-        android:name="com.kinopoisklite.view.MovieAdd"
-        android:label="movie_add_fragment"
-        tools:layout="@layout/movie_add_fragment" />
+        android:id="@+id/movie"
+        android:name="com.kinopoisklite.view.MovieView"
+        android:label="movie_fragment"
+        tools:layout="@layout/movie_fragment" />
 </navigation>

@@ -19,7 +19,7 @@ import java.util.concurrent.Executors;
 
 import lombok.Getter;
 
-@Database(entities = {RoomMovieDTO.class, AgeRating.class}, version = 1, exportSchema = false)
+@Database(entities = {RoomMovieDTO.class, AgeRating.class}, version = 2, exportSchema = false)
 public abstract class MovieRoomDatabase extends RoomDatabase {
     public abstract MovieDAO movieDAO();
 
@@ -48,8 +48,8 @@ public abstract class MovieRoomDatabase extends RoomDatabase {
                             MovieRoomDatabase.class, "KinopoiskLiteBase")
                             .addCallback(new RoomDatabase.Callback() {
                                 @Override
-                                public void onCreate(@NonNull SupportSQLiteDatabase db) {
-                                    super.onCreate(db);
+                                public void onOpen(@NonNull SupportSQLiteDatabase db) {
+                                    super.onOpen(db);
                                     executorService.execute(() -> {
                                         initialRatings.forEach(initialRating -> {
                                             if (!INSTANCE.ageRatingDAO().isRatingExists(initialRating.getId()))

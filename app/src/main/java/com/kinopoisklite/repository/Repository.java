@@ -14,5 +14,7 @@ public interface Repository {
 
     <T extends Movie> void deleteMovie(T movie);
 
+    <T extends Movie> void updateMovie(T movie);
+
     <T extends Movie> void addMovie(T movie);
 }

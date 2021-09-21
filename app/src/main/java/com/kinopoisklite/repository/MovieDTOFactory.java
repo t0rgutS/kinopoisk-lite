@@ -15,23 +15,32 @@ public class MovieDTOFactory {
     }
 
     public static Movie formMovieDTO(String title, String releaseYear, String duration,
-                                     String description, AgeRating rating) {
+                                     String description, AgeRating rating, String coverUri) {
+        return formMovieDTO(null, title, releaseYear, duration, description, rating, coverUri);
+    }
+
+    public static Movie formMovieDTO(Long id, String title, String releaseYear, String duration,
+                                     String description, AgeRating rating, String coverUri) {
         Movie m;
         if (version == dtoVersion.PHP) {
             m = new RemoteMovieDTO();
-            m.setId(0L);
+            m.setId(id != null ? id : 0L);
             m.setTitle(title);
             m.setReleaseYear(releaseYear != null ? Integer.parseInt(releaseYear) : LocalDateTime.now().getYear());
             m.setDuration(duration != null ? Integer.parseInt(duration) : 0);
             m.setDescription(description);
             ((RemoteMovieDTO) m).setRatingCategory(rating.getRatingCategory());
+            m.setCoverUri(coverUri);
         } else {
             m = new RoomMovieDTO();
+            if (id != null)
+                m.setId(id);
             m.setTitle(title);
             m.setReleaseYear(releaseYear != null ? Integer.parseInt(releaseYear) : LocalDateTime.now().getYear());
             m.setDuration(duration != null ? Integer.parseInt(duration) : 0);
             m.setDescription(description);
             ((RoomMovieDTO) m).setAgeRatingId(rating.getId());
+            m.setCoverUri(coverUri);
         }
         return m;
     }

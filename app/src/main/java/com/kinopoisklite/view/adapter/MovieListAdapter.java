@@ -1,11 +1,16 @@
 package com.kinopoisklite.view.adapter;
 
+import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.Gson;
+import com.kinopoisklite.R;
 import com.kinopoisklite.databinding.MovieListElementBinding;
 import com.kinopoisklite.model.Movie;
 
@@ -37,7 +42,15 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Movi
                     String.valueOf(movie.getDuration()) + " минут");
             holder.binding.ageRatingView.setText("Возрастной рейтинг: "
                     + movie.getAgeRating().getRatingCategory());
-
+            holder.binding.layout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("movie", new Gson().toJson(movie));
+                    Navigation.findNavController(v)
+                            .navigate(R.id.action_movieList_to_movie, bundle);
+                }
+            });
         }
     }
 

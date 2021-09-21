@@ -6,6 +6,7 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Transaction;
+import androidx.room.Update;
 
 import com.kinopoisklite.repository.room.model.RoomMovieDTO;
 import com.kinopoisklite.repository.room.relation.MovieWithRating;
@@ -20,6 +21,9 @@ public interface MovieDAO {
 
     @Insert
     void addMovie(RoomMovieDTO movie);
+
+    @Update
+    void updateMovie(RoomMovieDTO movie);
 
     @Delete
     void deleteMovie(RoomMovieDTO movie);

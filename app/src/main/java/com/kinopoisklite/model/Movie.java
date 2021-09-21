@@ -4,6 +4,8 @@ import androidx.room.ColumnInfo;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
+import com.google.gson.Gson;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -28,18 +30,17 @@ public class Movie {
     protected String description;
     @Ignore
     private AgeRating ageRating;
-    //private String coverUrl;
-    //private String trailerUrl;
+    @ColumnInfo
+    private String coverUri;
 
+    @Ignore
     public Movie(JSONObject object) throws JSONException {
         id = object.getLong("id");
         title = object.getString("title");
         releaseYear = object.getInt("releaseYear");
         duration = object.getInt("duration");
         description = object.getString("description");
-        if(object.has("ageRating"))
+        if (object.has("ageRating"))
             ageRating = new AgeRating(object.getJSONObject("ageRating"));
-      //  coverUrl = object.getString("coverUrl");
-      //  trailerUrl = object.getString("trailerUrl");
     }
 }

@@ -38,4 +38,15 @@ public class AgeRatingAdapter extends ArrayAdapter<AgeRating> {
         textView.setText(rating.getRatingCategory());
         return convertView;
     }
+
+    @Override
+    public int getPosition(@Nullable AgeRating item) {
+        AgeRating found = ageRatings.stream().filter(el -> {
+            if(item != null)
+                return el.getRatingCategory().equals(item.getRatingCategory());
+            else
+                return false;
+        }).findFirst().orElse(null);
+        return ageRatings.indexOf(found);
+    }
 }

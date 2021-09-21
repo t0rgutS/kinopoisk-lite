@@ -2,6 +2,7 @@ package com.kinopoisklite.view;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -23,15 +24,13 @@ import com.kinopoisklite.viewModel.MovieListViewModel;
 
 import java.util.List;
 
-public class MovieList extends Fragment {
-    private static final String TITLE = "Список фильмов";
-
+public class MovieListView extends Fragment {
     private MovieListFragmentBinding binding;
 
     private MovieListViewModel mViewModel;
 
-    public static MovieList newInstance() {
-        return new MovieList();
+    public static MovieListView newInstance() {
+        return new MovieListView();
     }
 
     @Override
@@ -40,12 +39,10 @@ public class MovieList extends Fragment {
         binding = MovieListFragmentBinding.inflate(getLayoutInflater(), container, false);
         binding.movieListView.setLayoutManager(new LinearLayoutManager(getContext()));
         FragmentActivity parent = requireActivity();
-        if (parent.getActionBar() != null)
-            parent.getActionBar().setTitle(TITLE);
         binding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Navigation.findNavController(v).navigate(R.id.action_movieList_to_movieAdd);
+                Navigation.findNavController(v).navigate(R.id.action_movieList_to_movie);
             }
         });
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
@@ -62,6 +59,7 @@ public class MovieList extends Fragment {
                         binding.movieListView.getAdapter()).getMovies().get(position));
             }
         }).attachToRecyclerView(binding.movieListView);
+
         return binding.getRoot();
     }
 

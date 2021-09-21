@@ -57,4 +57,11 @@ public class RoomRepository implements Repository {
             movieDAO.addMovie((RoomMovieDTO) movie);
         });
     }
+
+    @Override
+    public <T extends Movie> void updateMovie(T movie) {
+        MovieRoomDatabase.getExecutorService().execute(() -> {
+            movieDAO.updateMovie((RoomMovieDTO) movie);
+        });
+    }
 }

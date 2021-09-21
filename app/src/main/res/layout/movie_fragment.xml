@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.kinopoisklite.view.MovieAdd">
+    tools:context="com.kinopoisklite.view.MovieView">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
@@ -128,8 +128,8 @@
 
                 <ImageView
                     android:id="@+id/cover"
-                    android:layout_width="200dp"
-                    android:layout_height="200dp"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
                     android:layout_below="@id/title"
                     android:layout_marginLeft="5dp"
                     android:scaleType="fitXY"
@@ -167,7 +167,19 @@
             android:clickable="true"
             android:src="@android:drawable/ic_input_add"
             app:layout_anchor="@+id/bottom_app_bar"
-            app:layout_anchorGravity="center_horizontal" />
+            app:layout_anchorGravity="center_horizontal"
+            android:visibility="visible"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/saveFab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/colorDarkGreen"
+            android:clickable="true"
+            android:src="@android:drawable/ic_menu_save"
+            app:layout_anchor="@+id/bottom_app_bar"
+            app:layout_anchorGravity="center_horizontal"
+            android:visibility="invisible" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </FrameLayout>

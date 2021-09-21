@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.kinopoisklite.repository.MovieDTOFactory;
 import com.kinopoisklite.repository.dtoVersion;
-import com.kinopoisklite.repository.RepositoryManager;
+import com.kinopoisklite.repository.ResourceManager;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        RepositoryManager.initRoom(getApplication());
+        ResourceManager.initRoom(getApplication());
         MovieDTOFactory.init(dtoVersion.ROOM);
     }
 }

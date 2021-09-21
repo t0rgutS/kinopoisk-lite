@@ -7,7 +7,7 @@ import com.kinopoisklite.exception.PersistenceException;
 import com.kinopoisklite.repository.MovieDTOFactory;
 import com.kinopoisklite.model.AgeRating;
 import com.kinopoisklite.model.Movie;
-import com.kinopoisklite.repository.RepositoryManager;
+import com.kinopoisklite.repository.ResourceManager;
 
 import java.util.List;
 
@@ -20,23 +20,29 @@ public class MovieViewModel extends ViewModel {
     private Movie savedMovie;
 
     public LiveData<List<AgeRating>> getAgeRatings() {
-        return RepositoryManager.getRepository().getAgeRatings();
+        return ResourceManager.getRepository().getAgeRatings();
     }
 
-    public void upsertMovie(String title, String releaseYear, String duration,
-                            String desctiption, AgeRating rating, String coverUri) throws PersistenceException {
+    public void saveMovie(String title, String releaseYear, String duration,
+                          String desctiption, AgeRating rating, String coverUri) throws PersistenceException {
         try {
+            if (savedMovie == null)
+                return;
+            Movie movie = MovieDTOFactory.formUpdateMovieDTO(title, releaseYear, duration,
+                    desctiption, rating, coverUri, savedMovie);
+            if (!savedMovie.equals(movie))
+                ResourceManager.getRepository().updateMovie(movie);
+        } catch (Exception e) {
+            throw new PersistenceException(e.getMessage());
+        }
+    }
 
-            Movie movie;
-            if (savedMovie != null) {
-                movie = MovieDTOFactory.formMovieDTO(savedMovie.getId(), title, releaseYear, duration,
-                        desctiption, rating, coverUri);
-                RepositoryManager.getRepository().updateMovie(movie);
-            } else {
-                movie = MovieDTOFactory.formMovieDTO(title, releaseYear, duration,
-                        desctiption, rating, coverUri);
-                RepositoryManager.getRepository().addMovie(movie);
-            }
+    public void addMovie(String title, String releaseYear, String duration,
+                         String desctiption, AgeRating rating, String coverUri) throws PersistenceException {
+        try {
+            Movie movie = MovieDTOFactory.formAddMovieDTO(title, releaseYear, duration,
+                    desctiption, rating, coverUri);
+            ResourceManager.getRepository().addMovie(movie);
         } catch (Exception e) {
             throw new PersistenceException(e.getMessage());
         }

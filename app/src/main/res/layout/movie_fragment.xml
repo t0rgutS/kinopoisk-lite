@@ -12,23 +12,24 @@
         android:background="@color/colorBlack"
         android:orientation="vertical">
 
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_gravity="top"
+            android:background="@color/colorDarkGreen"
+            app:titleTextColor="@color/colorBlack"
+            app:navigationIcon="?attr/homeAsUpIndicator"
+            />
+
         <ScrollView
+            android:layout_marginTop="50dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-
-                <ImageButton
-                    android:id="@+id/back"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_above="@id/cover"
-                    android:background="@color/colorBlack"
-                    android:layout_alignParentStart="true"
-                    android:layout_marginBottom="10dp"
-                    android:src="?attr/homeAsUpIndicator" />
 
                 <EditText
                     android:id="@+id/description"
@@ -131,7 +132,9 @@
                     android:layout_width="150dp"
                     android:layout_height="150dp"
                     android:layout_below="@id/title"
-                    android:layout_marginLeft="5dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:background="@drawable/border"
                     android:scaleType="fitXY"
                     app:srcCompat="@android:drawable/ic_menu_report_image" />
 
@@ -169,17 +172,6 @@
             app:layout_anchor="@+id/bottom_app_bar"
             app:layout_anchorGravity="center_horizontal"
             android:visibility="visible"/>
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/saveFab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/colorDarkGreen"
-            android:clickable="true"
-            android:src="@android:drawable/ic_menu_save"
-            app:layout_anchor="@+id/bottom_app_bar"
-            app:layout_anchorGravity="center_horizontal"
-            android:visibility="invisible" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </FrameLayout>

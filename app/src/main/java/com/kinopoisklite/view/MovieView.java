@@ -18,12 +18,12 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
-import com.google.gson.Gson;
 import com.kinopoisklite.R;
 import com.kinopoisklite.databinding.MovieFragmentBinding;
 import com.kinopoisklite.exception.PersistenceException;
 import com.kinopoisklite.model.AgeRating;
 import com.kinopoisklite.model.Movie;
+import com.kinopoisklite.repository.ResourceManager;
 import com.kinopoisklite.view.adapter.AgeRatingAdapter;
 import com.kinopoisklite.viewModel.MovieViewModel;
 
@@ -45,38 +45,48 @@ public class MovieView extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         binding = MovieFragmentBinding.inflate(getLayoutInflater(), container, false);
         FragmentActivity parent = requireActivity();
-        binding.back.setOnClickListener(new View.OnClickListener() {
+        binding.toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                try {
+                    mViewModel.saveMovie(binding.title.getText().toString(),
+                            binding.releaseYear.getText().toString(),
+                            binding.duration.getText().toString(),
+                            binding.description.getText().toString(),
+                            ((AgeRating) binding.ageRating.getSelectedItem()),
+                            coverUri);
+                } catch (PersistenceException e) {
+                    e.printStackTrace();
+                    Toast.makeText(getContext(), e.getMessage(),
+                            Toast.LENGTH_LONG).show();
+                }
                 Navigation.findNavController(v).popBackStack();
             }
         });
-        View.OnClickListener clickListener = new View.OnClickListener() {
+        binding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!(binding.title.getText().toString().isEmpty() ||
                         binding.releaseYear.getText().toString().isEmpty() ||
                         binding.duration.getText().toString().isEmpty())) {
                     try {
-                        mViewModel.upsertMovie(binding.title.getText().toString(),
+                        mViewModel.addMovie(binding.title.getText().toString(),
                                 binding.releaseYear.getText().toString(),
                                 binding.duration.getText().toString(),
                                 binding.description.getText().toString(),
                                 ((AgeRating) binding.ageRating.getSelectedItem()),
                                 coverUri);
+                        Navigation.findNavController(v).popBackStack();
                     } catch (PersistenceException e) {
                         e.printStackTrace();
                         Toast.makeText(getContext(), e.getMessage(),
                                 Toast.LENGTH_LONG).show();
                     }
-                    Navigation.findNavController(v).popBackStack();
                 } else
                     Toast.makeText(getContext(), "Заполните все обязательные поля!",
                             Toast.LENGTH_LONG).show();
             }
-        };
-        binding.fab.setOnClickListener(clickListener);
-        binding.saveFab.setOnClickListener(clickListener);
+        });
         binding.cover.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -119,13 +129,12 @@ public class MovieView extends Fragment {
             binding.ageRating.setAdapter(new AgeRatingAdapter(getContext(),
                     R.layout.support_simple_spinner_dropdown_item, ageRatings));
             if (getArguments() != null) {
-                Movie movie = new Gson()
+                Movie movie = ResourceManager.getGson()
                         .fromJson(getArguments()
                                 .getString("movie"), Movie.class);
                 mViewModel.setSavedMovie(movie);
                 binding.ageRating.setSelection(((AgeRatingAdapter) binding.ageRating
                         .getAdapter()).getPosition(movie.getAgeRating()));
-                binding.saveFab.setVisibility(View.VISIBLE);
                 binding.fab.setVisibility(View.INVISIBLE);
                 binding.title.setText(movie.getTitle());
                 binding.releaseYear.setText(String.valueOf(movie.getReleaseYear()));
@@ -144,9 +153,10 @@ public class MovieView extends Fragment {
                         Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 }
+                binding.toolbar.setTitle("Фильм");
             } else {
-                binding.saveFab.setVisibility(View.INVISIBLE);
                 binding.fab.setVisibility(View.VISIBLE);
+                binding.toolbar.setTitle("Добавить новый фильм");
             }
         });
     }

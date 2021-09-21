@@ -13,6 +13,7 @@ import com.google.gson.Gson;
 import com.kinopoisklite.R;
 import com.kinopoisklite.databinding.MovieListElementBinding;
 import com.kinopoisklite.model.Movie;
+import com.kinopoisklite.repository.ResourceManager;
 
 import java.util.List;
 
@@ -46,7 +47,7 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Movi
                 @Override
                 public void onClick(View v) {
                     Bundle bundle = new Bundle();
-                    bundle.putString("movie", new Gson().toJson(movie));
+                    bundle.putString("movie", ResourceManager.getGson().toJson(movie));
                     Navigation.findNavController(v)
                             .navigate(R.id.action_movieList_to_movie, bundle);
                 }

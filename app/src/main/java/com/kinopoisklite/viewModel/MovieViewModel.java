@@ -30,11 +30,9 @@ public class MovieViewModel extends ViewModel {
     }
 
     public Bitmap displayCover(Activity parent, String coverUri) throws FileNotFoundException {
-        if (savedMovie == null)
+        if (coverUri == null)
             return null;
-        if (savedMovie.getCoverUri() == null)
-            return null;
-        if (savedMovie.getCoverUri().isEmpty())
+        if (coverUri.isEmpty())
             return null;
         return BitmapFactory.decodeFileDescriptor(
                 parent.getApplicationContext()

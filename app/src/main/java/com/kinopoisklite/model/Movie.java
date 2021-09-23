@@ -31,7 +31,7 @@ public class Movie {
     protected String description;
     @Ignore
     private AgeRating ageRating;
-    @ColumnInfo
+    @ColumnInfo(name = "cover_uri")
     private String coverUri;
 
     @Ignore

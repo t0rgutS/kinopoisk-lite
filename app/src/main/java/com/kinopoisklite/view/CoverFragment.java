@@ -1,4 +1,4 @@
-package com.kinopoisklite;
+package com.kinopoisklite.view;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.Navigation;
 
+import com.kinopoisklite.CoverViewModel;
 import com.kinopoisklite.databinding.CoverFragmentBinding;
 
 public class CoverFragment extends Fragment {

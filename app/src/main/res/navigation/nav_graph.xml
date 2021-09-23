@@ -25,7 +25,7 @@
     </fragment>
     <fragment
         android:id="@+id/coverFragment"
-        android:name="com.kinopoisklite.CoverFragment"
+        android:name="com.kinopoisklite.view.CoverFragment"
         android:label="cover_fragment"
         tools:layout="@layout/cover_fragment" />
 </navigation>

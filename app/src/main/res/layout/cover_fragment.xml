@@ -29,7 +29,8 @@
             android:layout_below="@id/title"
             android:layout_marginTop="50dp"
             android:layout_marginBottom="50dp"
-            android:scaleType="fitXY"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
             app:srcCompat="@android:drawable/ic_menu_report_image" />
 
         <com.google.android.material.bottomappbar.BottomAppBar

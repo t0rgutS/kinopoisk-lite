@@ -115,10 +115,14 @@ public class MovieView extends Fragment {
         mViewModel.getAgeRatings().observe(getViewLifecycleOwner(), (List<AgeRating> ageRatings) -> {
             binding.ageRating.setAdapter(new AgeRatingAdapter(getContext(),
                     R.layout.support_simple_spinner_dropdown_item, ageRatings));
-            if (getArguments() != null) {
-                Movie movie = ResourceManager.getGson()
-                        .fromJson(getArguments()
-                                .getString("movie"), Movie.class);
+            Movie movie = mViewModel.getSavedMovie();
+            if (movie == null) {
+                if (getArguments() != null)
+                    movie = ResourceManager.getGson()
+                            .fromJson(getArguments()
+                                    .getString("movie"), Movie.class);
+            }
+            if (movie != null) {
                 mViewModel.setSavedMovie(movie);
                 binding.ageRating.setSelection(((AgeRatingAdapter) binding.ageRating
                         .getAdapter()).getPosition(movie.getAgeRating()));
@@ -186,10 +190,23 @@ public class MovieView extends Fragment {
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.open: {
-                        Bundle bundle = new Bundle();
-                        bundle.putString("cover", coverUri);
-                        Navigation.findNavController(v).navigate(R.id.action_movie_to_coverFragment, bundle);
-                        return true;
+                        try {
+                            mViewModel.saveMovie(binding.title.getText().toString(),
+                                    binding.releaseYear.getText().toString(),
+                                    binding.duration.getText().toString(),
+                                    binding.description.getText().toString(),
+                                    ((AgeRating) binding.ageRating.getSelectedItem()),
+                                    coverUri);
+                            Bundle bundle = new Bundle();
+                            bundle.putString("cover", coverUri);
+                            Navigation.findNavController(v).navigate(R.id.action_movie_to_coverFragment, bundle);
+                            return true;
+                        } catch (PersistenceException e) {
+                            e.printStackTrace();
+                            Toast.makeText(getContext(), e.getMessage(),
+                                    Toast.LENGTH_LONG).show();
+                        }
+                        return false;
                     }
                     case R.id.delete: {
                         coverUri = null;

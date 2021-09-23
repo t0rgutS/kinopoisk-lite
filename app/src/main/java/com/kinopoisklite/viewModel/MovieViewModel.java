@@ -51,8 +51,11 @@ public class MovieViewModel extends ViewModel {
                 return;
             Movie movie = MovieDTOFactory.formUpdateMovieDTO(title, releaseYear, duration,
                     desctiption, rating, coverUri, savedMovie);
-            if (!savedMovie.equals(movie))
+            if (!savedMovie.equals(movie)) {
                 ResourceManager.getRepository().updateMovie(movie);
+                movie.setAgeRating(rating);
+                savedMovie = movie;
+            }
         } catch (Exception e) {
             throw new PersistenceException(e.getMessage());
         }

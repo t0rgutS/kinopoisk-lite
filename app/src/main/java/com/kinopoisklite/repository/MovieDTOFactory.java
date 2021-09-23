@@ -31,6 +31,9 @@ public class MovieDTOFactory {
                     ? !duration.isEmpty() ? Integer.parseInt(duration) : initial.getDuration()
                     : initial.getDuration());
             m.setDescription(description);
+            m.setAgeRating(rating != null
+                    ? rating
+                    : initial.getAgeRating());
             ((RemoteMovieDTO) m).setRatingCategory(rating != null
                     ? rating.getRatingCategory()
                     : initial.getAgeRating().getRatingCategory());
@@ -48,6 +51,9 @@ public class MovieDTOFactory {
                     ? !duration.isEmpty() ? Integer.parseInt(duration) : initial.getDuration()
                     : initial.getDuration());
             m.setDescription(description);
+            m.setAgeRating(rating != null
+                    ? rating
+                    : initial.getAgeRating());
             ((RoomMovieDTO) m).setAgeRatingId(rating != null
                     ? rating.getId()
                     : initial.getAgeRating().getId());

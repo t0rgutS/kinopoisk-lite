@@ -30,13 +30,11 @@ public class MovieDTOFactory {
             m.setDuration(duration != null
                     ? !duration.isEmpty() ? Integer.parseInt(duration) : initial.getDuration()
                     : initial.getDuration());
-            m.setDescription(description != null ? description : initial.getDescription());
+            m.setDescription(description);
             ((RemoteMovieDTO) m).setRatingCategory(rating != null
                     ? rating.getRatingCategory()
                     : initial.getAgeRating().getRatingCategory());
-            m.setCoverUri(coverUri != null
-                    ? !coverUri.isEmpty() ? coverUri : initial.getCoverUri()
-                    : initial.getCoverUri());
+            m.setCoverUri(coverUri);
         } else {
             m = new RoomMovieDTO();
             m.setId(initial.getId());
@@ -49,13 +47,11 @@ public class MovieDTOFactory {
             m.setDuration(duration != null
                     ? !duration.isEmpty() ? Integer.parseInt(duration) : initial.getDuration()
                     : initial.getDuration());
-            m.setDescription(description != null ? description : initial.getDescription());
+            m.setDescription(description);
             ((RoomMovieDTO) m).setAgeRatingId(rating != null
                     ? rating.getId()
                     : initial.getAgeRating().getId());
-            m.setCoverUri(coverUri != null
-                    ? !coverUri.isEmpty() ? coverUri : initial.getCoverUri()
-                    : initial.getCoverUri());
+            m.setCoverUri(coverUri);
         }
         return m;
     }

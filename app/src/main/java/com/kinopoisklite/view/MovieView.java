@@ -1,23 +1,27 @@
 package com.kinopoisklite.view;
 
 import android.content.Intent;
-import android.graphics.BitmapFactory;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
+import com.kinopoisklite.MainActivity;
 import com.kinopoisklite.R;
 import com.kinopoisklite.databinding.MovieFragmentBinding;
 import com.kinopoisklite.exception.PersistenceException;
@@ -35,6 +39,8 @@ public class MovieView extends Fragment {
     private MovieViewModel mViewModel;
 
     private String coverUri = null;
+    private ActivityResultLauncher<String[]> coverLauncher;
+    private PopupMenu coverPopupMenu;
 
     public static MovieView newInstance() {
         return new MovieView();
@@ -45,6 +51,8 @@ public class MovieView extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         binding = MovieFragmentBinding.inflate(getLayoutInflater(), container, false);
         FragmentActivity parent = requireActivity();
+        setCoverLauncher();
+        setCoverPopup(binding.cover);
         binding.toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -90,32 +98,11 @@ public class MovieView extends Fragment {
         binding.cover.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                parent.getActivityResultRegistry().register("ImageLoader",
-                        new ActivityResultContracts.OpenDocument(),
-                        new ActivityResultCallback<Uri>() {
-                            @Override
-                            public void onActivityResult(Uri result) {
-                                if (result != null) {
-                                    parent.getApplicationContext().getContentResolver()
-                                            .takePersistableUriPermission(result,
-                                                    Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                                    coverUri = result.toString();
-                                    try {
-                                        binding.cover.setImageBitmap(
-                                                BitmapFactory.decodeFileDescriptor(
-                                                        parent.getApplicationContext()
-                                                                .getContentResolver().
-                                                                openFileDescriptor(
-                                                                        Uri.parse(result.toString()), "r")
-                                                                .getFileDescriptor()));
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                        Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-                                    }
-                                } else if (coverUri != null)
-                                    coverUri = null;
-                            }
-                        }).launch(new String[]{"image/*"});
+                if (coverUri == null) {
+                    coverLauncher.launch(new String[]{"image/*"});
+                } else {
+                    coverPopupMenu.show();
+                }
             }
         });
         return binding.getRoot();
@@ -140,14 +127,11 @@ public class MovieView extends Fragment {
                 binding.releaseYear.setText(String.valueOf(movie.getReleaseYear()));
                 binding.duration.setText(String.valueOf(movie.getDuration()));
                 if (movie.getCoverUri() != null && !movie.getCoverUri().isEmpty()) {
+                    coverUri = movie.getCoverUri();
                     try {
-                        binding.cover.setImageBitmap(
-                                BitmapFactory.decodeFileDescriptor(
-                                        requireActivity().getApplicationContext()
-                                                .getContentResolver().
-                                                openFileDescriptor(
-                                                        Uri.parse(movie.getCoverUri()), "r")
-                                                .getFileDescriptor()));
+                        Bitmap cover = mViewModel.displayCover(requireActivity(), coverUri);
+                        if (cover != null)
+                            binding.cover.setImageBitmap(cover);
                     } catch (Exception e) {
                         e.printStackTrace();
                         Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
@@ -166,5 +150,60 @@ public class MovieView extends Fragment {
         super.onDestroy();
         binding = null;
         mViewModel = null;
+    }
+
+    private void setCoverLauncher() {
+        MainActivity parent = (MainActivity) requireActivity();
+        coverLauncher = parent.getActivityResultRegistry().register("ImageLoader",
+                new ActivityResultContracts.OpenDocument(),
+                new ActivityResultCallback<Uri>() {
+                    @Override
+                    public void onActivityResult(Uri result) {
+                        if (result != null) {
+                            parent.getApplicationContext().getContentResolver()
+                                    .takePersistableUriPermission(result,
+                                            Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                            coverUri = result.toString();
+                            try {
+                                Bitmap cover = mViewModel.displayCover(parent, result.toString());
+                                if (cover != null)
+                                    binding.cover.setImageBitmap(cover);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                            }
+                        } else if (coverUri != null)
+                            coverUri = null;
+                    }
+                });
+    }
+
+    private void setCoverPopup(View v) {
+        coverPopupMenu = new PopupMenu(requireContext(), v);
+        coverPopupMenu.inflate(R.menu.cover_popup);
+        coverPopupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.open: {
+                        Bundle bundle = new Bundle();
+                        bundle.putString("cover", coverUri);
+                        Navigation.findNavController(v).navigate(R.id.action_movie_to_coverFragment, bundle);
+                        return true;
+                    }
+                    case R.id.delete: {
+                        coverUri = null;
+                        binding.cover.setImageResource(android.R.drawable.ic_menu_report_image);
+                        return true;
+                    }
+                    case R.id.change: {
+                        coverLauncher.launch(new String[]{"image/*"});
+                        return true;
+                    }
+                    default:
+                        return false;
+                }
+            }
+        });
     }
 }

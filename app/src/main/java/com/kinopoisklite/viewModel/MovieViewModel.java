@@ -1,5 +1,10 @@
 package com.kinopoisklite.viewModel;
 
+import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -9,6 +14,7 @@ import com.kinopoisklite.model.AgeRating;
 import com.kinopoisklite.model.Movie;
 import com.kinopoisklite.repository.ResourceManager;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 
 import lombok.Getter;
@@ -21,6 +27,21 @@ public class MovieViewModel extends ViewModel {
 
     public LiveData<List<AgeRating>> getAgeRatings() {
         return ResourceManager.getRepository().getAgeRatings();
+    }
+
+    public Bitmap displayCover(Activity parent, String coverUri) throws FileNotFoundException {
+        if (savedMovie == null)
+            return null;
+        if (savedMovie.getCoverUri() == null)
+            return null;
+        if (savedMovie.getCoverUri().isEmpty())
+            return null;
+        return BitmapFactory.decodeFileDescriptor(
+                parent.getApplicationContext()
+                        .getContentResolver().
+                        openFileDescriptor(
+                                Uri.parse(coverUri), "r")
+                        .getFileDescriptor());
     }
 
     public void saveMovie(String title, String releaseYear, String duration,

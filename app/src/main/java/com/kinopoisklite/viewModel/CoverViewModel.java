@@ -1,4 +1,4 @@
-package com.kinopoisklite;
+package com.kinopoisklite.viewModel;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -15,7 +15,7 @@ public class CoverViewModel extends ViewModel {
     @Setter
     private String coverUri;
 
-    public Bitmap displayCover(Activity parent) throws FileNotFoundException {
+    public Bitmap getCover(Activity parent) throws FileNotFoundException {
         if (coverUri == null)
             return null;
         if (coverUri.isEmpty())

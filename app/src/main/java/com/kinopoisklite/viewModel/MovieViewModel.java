@@ -29,7 +29,7 @@ public class MovieViewModel extends ViewModel {
         return ResourceManager.getRepository().getAgeRatings();
     }
 
-    public Bitmap displayCover(Activity parent, String coverUri) throws FileNotFoundException {
+    public Bitmap getCover(Activity parent, String coverUri) throws FileNotFoundException {
         if (coverUri == null)
             return null;
         if (coverUri.isEmpty())

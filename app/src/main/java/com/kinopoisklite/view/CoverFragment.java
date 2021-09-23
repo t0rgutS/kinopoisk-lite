@@ -13,7 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.Navigation;
 
-import com.kinopoisklite.CoverViewModel;
+import com.kinopoisklite.viewModel.CoverViewModel;
 import com.kinopoisklite.databinding.CoverFragmentBinding;
 
 public class CoverFragment extends Fragment {
@@ -46,7 +46,7 @@ public class CoverFragment extends Fragment {
             String coverUri = getArguments().getString("cover");
             mViewModel.setCoverUri(coverUri);
             try {
-                Bitmap cover = mViewModel.displayCover(requireActivity());
+                Bitmap cover = mViewModel.getCover(requireActivity());
                 if (cover != null)
                     binding.cover.setImageBitmap(cover);
             } catch (Exception e) {

@@ -133,7 +133,7 @@ public class MovieView extends Fragment {
                 if (movie.getCoverUri() != null && !movie.getCoverUri().isEmpty()) {
                     coverUri = movie.getCoverUri();
                     try {
-                        Bitmap cover = mViewModel.displayCover(requireActivity(), coverUri);
+                        Bitmap cover = mViewModel.getCover(requireActivity(), coverUri);
                         if (cover != null)
                             binding.cover.setImageBitmap(cover);
                     } catch (Exception e) {
@@ -169,7 +169,7 @@ public class MovieView extends Fragment {
                                             Intent.FLAG_GRANT_READ_URI_PERMISSION);
                             coverUri = result.toString();
                             try {
-                                Bitmap cover = mViewModel.displayCover(parent, result.toString());
+                                Bitmap cover = mViewModel.getCover(parent, result.toString());
                                 if (cover != null)
                                     binding.cover.setImageBitmap(cover);
                             } catch (Exception e) {

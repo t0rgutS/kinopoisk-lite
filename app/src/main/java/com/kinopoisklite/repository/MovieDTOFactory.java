@@ -15,6 +15,7 @@ public class MovieDTOFactory {
     }
 
     public static Movie formUpdateMovieDTO(String title, String releaseYear, String duration,
+                                           String genre, String country,
                                            String description, AgeRating rating, String coverUri,
                                            Movie initial) {
         Movie m;
@@ -50,6 +51,12 @@ public class MovieDTOFactory {
             m.setDuration(duration != null
                     ? !duration.isEmpty() ? Integer.parseInt(duration) : initial.getDuration()
                     : initial.getDuration());
+            m.setGenre(genre != null ? !genre.isEmpty()
+                    ? genre : initial.getGenre()
+                    : initial.getGenre());
+            m.setCountry(country != null ? !country.isEmpty()
+                    ? country : initial.getCountry()
+                    : initial.getCountry());
             m.setDescription(description);
             m.setAgeRating(rating != null
                     ? rating
@@ -63,6 +70,7 @@ public class MovieDTOFactory {
     }
 
     public static Movie formAddMovieDTO(String title, String releaseYear, String duration,
+                                        String genre, String country,
                                         String description, AgeRating rating, String coverUri) {
         Movie m;
         if (version == dtoVersion.PHP) {
@@ -79,6 +87,8 @@ public class MovieDTOFactory {
             m.setTitle(title);
             m.setReleaseYear(releaseYear != null ? Integer.parseInt(releaseYear) : LocalDateTime.now().getYear());
             m.setDuration(duration != null ? Integer.parseInt(duration) : 0);
+            m.setGenre(genre);
+            m.setCountry(country);
             m.setDescription(description);
             ((RoomMovieDTO) m).setAgeRatingId(rating.getId());
             m.setCoverUri(coverUri);

@@ -49,7 +49,7 @@
                     android:id="@+id/descriptionView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/cover"
+                    android:layout_below="@id/ageRating"
                     android:layout_marginLeft="15dp"
                     android:layout_marginTop="20dp"
                     android:text="@string/description_text"
@@ -60,27 +60,49 @@
                     style="@style/Widget.AppCompat.Spinner.Underlined"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/duration"
-                    android:layout_toRightOf="@id/ratingView"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_below="@id/ratingView"
                     android:backgroundTint="@color/colorDarkGreen" />
 
                 <TextView
                     android:id="@+id/ratingView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/durationView"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginTop="24dp"
-                    android:layout_marginRight="5dp"
-                    android:layout_toRightOf="@id/cover"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_below="@id/genre"
                     android:text="@string/rating_text"
+                    android:textColor="@color/colorGreen" />
+
+                <AutoCompleteTextView
+                    android:id="@+id/genre"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/genreView"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:backgroundTint="@color/colorDarkGreen"
+                    android:ems="10"
+                    android:text=""
+                    android:textColor="@color/colorGreen" />
+
+                <TextView
+                    android:id="@+id/genreView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/cover"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginRight="5dp"
+                    android:text="Жанр"
                     android:textColor="@color/colorGreen" />
 
                 <EditText
                     android:id="@+id/duration"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/releaseYear"
+                    android:layout_below="@id/country"
                     android:layout_marginTop="8dp"
                     android:layout_marginRight="15dp"
                     android:layout_toRightOf="@id/durationView"
@@ -94,12 +116,37 @@
                     android:id="@+id/durationView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/releaseYearView"
+                    android:layout_below="@id/countryView"
                     android:layout_marginLeft="5dp"
                     android:layout_marginTop="35dp"
                     android:layout_marginRight="5dp"
                     android:layout_toRightOf="@id/cover"
                     android:text="@string/duration_text"
+                    android:textColor="@color/colorGreen" />
+
+                <AutoCompleteTextView
+                    android:id="@+id/country"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/releaseYear"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_toRightOf="@id/releaseYearView"
+                    android:backgroundTint="@color/colorDarkGreen"
+                    android:ems="10"
+                    android:text=""
+                    android:textColor="@color/colorGreen" />
+
+                <TextView
+                    android:id="@+id/countryView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/releaseYearView"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="35dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_toRightOf="@id/cover"
+                    android:text="Страна"
                     android:textColor="@color/colorGreen" />
 
                 <EditText

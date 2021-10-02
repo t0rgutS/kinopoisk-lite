@@ -28,6 +28,10 @@ public class Movie {
     @ColumnInfo
     protected Integer duration;
     @ColumnInfo
+    protected String country;
+    @ColumnInfo
+    protected String genre;
+    @ColumnInfo
     protected String description;
     @Ignore
     private AgeRating ageRating;
@@ -47,21 +51,24 @@ public class Movie {
 
     @Override
     public boolean equals(@Nullable Object obj) {
-        if(obj == null)
+        if (obj == null)
             return false;
-        if(obj.getClass() != getClass())
+        if (obj.getClass() != getClass())
             return false;
         Movie second = (Movie) obj;
-        if(!this.id.equals(second.id)
-            || !this.title.equals(second.title)
-            || !this.releaseYear.equals(second.releaseYear)
-            || !this.duration.equals(second.duration)
-            || !this.ageRating.getRatingCategory().equals(second.ageRating.getRatingCategory()))
+        if (!this.id.equals(second.id)
+                || !this.title.equals(second.title)
+                || !this.releaseYear.equals(second.releaseYear)
+                || !this.duration.equals(second.duration)
+                || !this.ageRating.getRatingCategory().equals(second.ageRating.getRatingCategory())
+                || !this.genre.equals(second.genre)
+                || !this.country.equals(second.country)
+        )
             return false;
-        else if(this.description != second.description)
-            if(!this.description.equals(second.description))
+        else if (this.description != second.description)
+            if (!this.description.equals(second.description))
                 return false;
-            else if(this.coverUri != second.coverUri)
+            else if (this.coverUri != second.coverUri)
                 return this.coverUri.equals(second.coverUri);
         return true;
     }

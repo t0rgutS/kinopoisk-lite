@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultCallback;
@@ -32,6 +33,7 @@ import com.kinopoisklite.view.adapter.AgeRatingAdapter;
 import com.kinopoisklite.viewModel.MovieViewModel;
 
 import java.util.List;
+import java.util.Map;
 
 public class MovieView extends Fragment {
     private MovieFragmentBinding binding;
@@ -60,6 +62,8 @@ public class MovieView extends Fragment {
                     mViewModel.saveMovie(binding.title.getText().toString(),
                             binding.releaseYear.getText().toString(),
                             binding.duration.getText().toString(),
+                            binding.genre.getText().toString(),
+                            binding.country.getText().toString(),
                             binding.description.getText().toString(),
                             ((AgeRating) binding.ageRating.getSelectedItem()),
                             coverUri);
@@ -76,11 +80,16 @@ public class MovieView extends Fragment {
             public void onClick(View v) {
                 if (!(binding.title.getText().toString().isEmpty() ||
                         binding.releaseYear.getText().toString().isEmpty() ||
-                        binding.duration.getText().toString().isEmpty())) {
+                        binding.duration.getText().toString().isEmpty()) ||
+                        binding.genre.getText().toString().isEmpty() ||
+                        binding.country.getText().toString().isEmpty()
+                ) {
                     try {
                         mViewModel.addMovie(binding.title.getText().toString(),
                                 binding.releaseYear.getText().toString(),
                                 binding.duration.getText().toString(),
+                                binding.genre.getText().toString(),
+                                binding.country.getText().toString(),
                                 binding.description.getText().toString(),
                                 ((AgeRating) binding.ageRating.getSelectedItem()),
                                 coverUri);
@@ -130,6 +139,8 @@ public class MovieView extends Fragment {
                 binding.title.setText(movie.getTitle());
                 binding.releaseYear.setText(String.valueOf(movie.getReleaseYear()));
                 binding.duration.setText(String.valueOf(movie.getDuration()));
+                binding.genre.setText(movie.getGenre());
+                binding.country.setText(movie.getCountry());
                 if (movie.getCoverUri() != null && !movie.getCoverUri().isEmpty()) {
                     coverUri = movie.getCoverUri();
                     try {
@@ -147,6 +158,17 @@ public class MovieView extends Fragment {
                 binding.toolbar.setTitle("Добавить новый фильм");
             }
         });
+        mViewModel.getGenresAndCountries().observe(getViewLifecycleOwner(),
+                (Map<String, List<String>> genresAndCountries) -> {
+                    ArrayAdapter<String> genreAdapter = new ArrayAdapter<>(requireContext(),
+                            android.R.layout.simple_dropdown_item_1line, genresAndCountries.get("genres"));
+                    genreAdapter.getFilter().filter(null);
+                    ArrayAdapter<String> countryAdapter = new ArrayAdapter<>(requireContext(),
+                            android.R.layout.simple_dropdown_item_1line, genresAndCountries.get("countries"));
+                    genreAdapter.getFilter().filter(null);
+                    binding.genre.setAdapter(genreAdapter);
+                    binding.country.setAdapter(countryAdapter);
+                });
     }
 
     @Override
@@ -194,6 +216,8 @@ public class MovieView extends Fragment {
                             mViewModel.saveMovie(binding.title.getText().toString(),
                                     binding.releaseYear.getText().toString(),
                                     binding.duration.getText().toString(),
+                                    binding.genre.getText().toString(),
+                                    binding.country.getText().toString(),
                                     binding.description.getText().toString(),
                                     ((AgeRating) binding.ageRating.getSelectedItem()),
                                     coverUri);

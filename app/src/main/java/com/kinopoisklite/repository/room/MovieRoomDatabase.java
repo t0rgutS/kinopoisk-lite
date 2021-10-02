@@ -19,7 +19,7 @@ import java.util.concurrent.Executors;
 
 import lombok.Getter;
 
-@Database(entities = {RoomMovieDTO.class, AgeRating.class}, version = 3, exportSchema = false)
+@Database(entities = {RoomMovieDTO.class, AgeRating.class}, version = 1, exportSchema = false)
 public abstract class MovieRoomDatabase extends RoomDatabase {
     public abstract MovieDAO movieDAO();
 

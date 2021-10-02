@@ -16,6 +16,7 @@ import com.kinopoisklite.repository.ResourceManager;
 
 import java.io.FileNotFoundException;
 import java.util.List;
+import java.util.Map;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -43,11 +44,13 @@ public class MovieViewModel extends ViewModel {
     }
 
     public void saveMovie(String title, String releaseYear, String duration,
+                          String genre, String country,
                           String desctiption, AgeRating rating, String coverUri) throws PersistenceException {
         try {
             if (savedMovie == null)
                 return;
             Movie movie = MovieDTOFactory.formUpdateMovieDTO(title, releaseYear, duration,
+                    genre, country,
                     desctiption, rating, coverUri, savedMovie);
             if (!savedMovie.equals(movie)) {
                 ResourceManager.getRepository().updateMovie(movie);
@@ -60,13 +63,19 @@ public class MovieViewModel extends ViewModel {
     }
 
     public void addMovie(String title, String releaseYear, String duration,
+                         String genre, String country,
                          String desctiption, AgeRating rating, String coverUri) throws PersistenceException {
         try {
             Movie movie = MovieDTOFactory.formAddMovieDTO(title, releaseYear, duration,
+                    genre, country,
                     desctiption, rating, coverUri);
             ResourceManager.getRepository().addMovie(movie);
         } catch (Exception e) {
             throw new PersistenceException(e.getMessage());
         }
+    }
+
+    public LiveData<Map<String, List<String>>> getGenresAndCountries() {
+        return ResourceManager.getProvider().getGenresAndCountries();
     }
 }

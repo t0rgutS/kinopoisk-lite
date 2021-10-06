@@ -158,16 +158,20 @@ public class MovieView extends Fragment {
                 binding.toolbar.setTitle("Добавить новый фильм");
             }
         });
-        mViewModel.getGenresAndCountries().observe(getViewLifecycleOwner(),
-                (Map<String, List<String>> genresAndCountries) -> {
+        mViewModel.getGenres().observe(getViewLifecycleOwner(),
+                (List<String> genres) -> {
                     ArrayAdapter<String> genreAdapter = new ArrayAdapter<>(requireContext(),
-                            android.R.layout.simple_dropdown_item_1line, genresAndCountries.get("genres"));
-                    genreAdapter.getFilter().filter(null);
-                    ArrayAdapter<String> countryAdapter = new ArrayAdapter<>(requireContext(),
-                            android.R.layout.simple_dropdown_item_1line, genresAndCountries.get("countries"));
+                            android.R.layout.simple_dropdown_item_1line, genres);
                     genreAdapter.getFilter().filter(null);
                     binding.genre.setAdapter(genreAdapter);
+                });
+        mViewModel.getCountries().observe(getViewLifecycleOwner(),
+                (List<String> countries) -> {
+                    ArrayAdapter<String> countryAdapter = new ArrayAdapter<>(requireContext(),
+                            android.R.layout.simple_dropdown_item_1line, countries);
+                    countryAdapter.getFilter().filter(null);
                     binding.country.setAdapter(countryAdapter);
+
                 });
     }
 

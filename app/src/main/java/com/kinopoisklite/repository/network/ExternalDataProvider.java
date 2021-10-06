@@ -20,6 +20,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ExternalDataProvider {
     private KinopoiskApi api;
+    private MutableLiveData<List<String>> genres;
+    private MutableLiveData<List<String>> countries;
 
     public ExternalDataProvider() {
         Retrofit retrofit = new Retrofit.Builder()
@@ -27,20 +29,29 @@ public class ExternalDataProvider {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         api = retrofit.create(KinopoiskApi.class);
+        genres = new MutableLiveData<>();
+        countries = new MutableLiveData<>();
+        getGenresAndCountries();
     }
 
-    public LiveData<Map<String, List<String>>> getGenresAndCountries() {
-        MutableLiveData<Map<String, List<String>>> genresAndCountries = new MutableLiveData<>();
+    public LiveData<List<String>> getCountries() {
+        return countries;
+    }
+
+    public LiveData<List<String>> getGenres() {
+        return genres;
+    }
+
+    private void getGenresAndCountries() {
         api.getGenresAndCountries(BuildConfig.KINOPOISK_API_KEY).enqueue(new Callback<GenresAndCountries>() {
             @Override
             public void onResponse(Call<GenresAndCountries> call, Response<GenresAndCountries> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Map<String, List<String>> map = new HashMap<>();
-                    map.put("genres", response.body().getGenres()
+                    genres.setValue(response.body().getGenres()
                             .stream().map(genre -> genre.getGenre()).collect(Collectors.toList()));
-                    map.put("countries", response.body().getCountries()
+                    countries.setValue(response.body().getCountries()
                             .stream().map(country -> country.getCountry()).collect(Collectors.toList()));
-                    genresAndCountries.setValue(map);
                 }
             }
 
@@ -49,6 +60,5 @@ public class ExternalDataProvider {
 
             }
         });
-        return genresAndCountries;
     }
 }

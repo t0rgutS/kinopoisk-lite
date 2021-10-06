@@ -75,7 +75,11 @@ public class MovieViewModel extends ViewModel {
         }
     }
 
-    public LiveData<Map<String, List<String>>> getGenresAndCountries() {
-        return ResourceManager.getProvider().getGenresAndCountries();
+    public LiveData<List<String>> getGenres() {
+        return ResourceManager.getProvider().getGenres();
+    }
+
+    public LiveData<List<String>> getCountries() {
+        return ResourceManager.getProvider().getCountries();
     }
 }

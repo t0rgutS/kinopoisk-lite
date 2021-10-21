@@ -18,7 +18,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
@@ -29,11 +28,11 @@ import com.kinopoisklite.exception.PersistenceException;
 import com.kinopoisklite.model.AgeRating;
 import com.kinopoisklite.model.Movie;
 import com.kinopoisklite.repository.ResourceManager;
+import com.kinopoisklite.security.Actions;
 import com.kinopoisklite.view.adapter.AgeRatingAdapter;
 import com.kinopoisklite.viewModel.MovieViewModel;
 
 import java.util.List;
-import java.util.Map;
 
 public class MovieView extends Fragment {
     private MovieFragmentBinding binding;
@@ -52,27 +51,34 @@ public class MovieView extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         binding = MovieFragmentBinding.inflate(getLayoutInflater(), container, false);
-        FragmentActivity parent = requireActivity();
         setCoverLauncher();
         setCoverPopup(binding.cover);
         binding.toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    mViewModel.saveMovie(binding.title.getText().toString(),
-                            binding.releaseYear.getText().toString(),
-                            binding.duration.getText().toString(),
-                            binding.genre.getText().toString(),
-                            binding.country.getText().toString(),
-                            binding.description.getText().toString(),
-                            ((AgeRating) binding.ageRating.getSelectedItem()),
-                            coverUri);
-                } catch (PersistenceException e) {
-                    e.printStackTrace();
-                    Toast.makeText(getContext(), e.getMessage(),
-                            Toast.LENGTH_LONG).show();
+                if (ResourceManager.getSessionManager().getAllowedActions().contains(Actions.CREATE)) {
+                    try {
+                        mViewModel.saveMovie(binding.title.getText().toString(),
+                                binding.releaseYear.getText().toString(),
+                                binding.duration.getText().toString(),
+                                binding.genre.getText().toString(),
+                                binding.country.getText().toString(),
+                                binding.description.getText().toString(),
+                                ((AgeRating) binding.ageRating.getSelectedItem()),
+                                coverUri);
+                    } catch (PersistenceException e) {
+                        e.printStackTrace();
+                        Toast.makeText(getContext(), e.getMessage(),
+                                Toast.LENGTH_LONG).show();
+                    }
                 }
                 Navigation.findNavController(v).popBackStack();
+            }
+        });
+        binding.toCabinet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Navigation.findNavController(v).navigate(R.id.action_movie_to_userCabinet);
             }
         });
         binding.fab.setOnClickListener(new View.OnClickListener() {
@@ -104,13 +110,16 @@ public class MovieView extends Fragment {
                             Toast.LENGTH_LONG).show();
             }
         });
-        binding.cover.setOnClickListener(new View.OnClickListener() {
+        binding.fav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (coverUri == null) {
-                    coverLauncher.launch(new String[]{"image/*"});
-                } else {
-                    coverPopupMenu.show();
+                try {
+                    mViewModel.addToFav();
+                    binding.fav.setVisibility(View.INVISIBLE);
+                } catch (PersistenceException e) {
+                    e.printStackTrace();
+                    Toast.makeText(getContext(), e.getMessage(),
+                            Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -136,6 +145,8 @@ public class MovieView extends Fragment {
                 binding.ageRating.setSelection(((AgeRatingAdapter) binding.ageRating
                         .getAdapter()).getPosition(movie.getAgeRating()));
                 binding.fab.setVisibility(View.INVISIBLE);
+                if (mViewModel.canAddToFav())
+                    binding.fav.setVisibility(View.VISIBLE);
                 binding.title.setText(movie.getTitle());
                 binding.releaseYear.setText(String.valueOf(movie.getReleaseYear()));
                 binding.duration.setText(String.valueOf(movie.getDuration()));
@@ -155,6 +166,7 @@ public class MovieView extends Fragment {
                 binding.toolbar.setTitle("Фильм");
             } else {
                 binding.fab.setVisibility(View.VISIBLE);
+                binding.fav.setVisibility(View.INVISIBLE);
                 binding.toolbar.setTitle("Добавить новый фильм");
             }
         });
@@ -173,6 +185,33 @@ public class MovieView extends Fragment {
                     binding.country.setAdapter(countryAdapter);
 
                 });
+        if (!mViewModel.getAllowedActions().contains(Actions.CREATE)) {
+            binding.title.setEnabled(false);
+            binding.releaseYear.setEnabled(false);
+            binding.duration.setEnabled(false);
+            binding.genre.setEnabled(false);
+            binding.country.setEnabled(false);
+            binding.description.setEnabled(false);
+            binding.ageRating.setEnabled(false);
+        } else {
+            binding.title.setEnabled(true);
+            binding.releaseYear.setEnabled(true);
+            binding.duration.setEnabled(true);
+            binding.genre.setEnabled(true);
+            binding.country.setEnabled(true);
+            binding.description.setEnabled(true);
+            binding.ageRating.setEnabled(true);
+            binding.cover.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (coverUri == null) {
+                        coverLauncher.launch(new String[]{"image/*"});
+                    } else {
+                        coverPopupMenu.show();
+                    }
+                }
+            });
+        }
     }
 
     @Override

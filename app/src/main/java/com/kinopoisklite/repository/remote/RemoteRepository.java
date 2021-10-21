@@ -6,6 +6,9 @@ import android.os.Looper;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.kinopoisklite.model.FavoriteMovie;
+import com.kinopoisklite.model.Role;
+import com.kinopoisklite.model.User;
 import com.kinopoisklite.repository.remote.model.RemoteMovieDTO;
 import com.kinopoisklite.model.AgeRating;
 import com.kinopoisklite.model.Movie;
@@ -106,6 +109,12 @@ public class RemoteRepository implements Repository {
     }
 
     @Override
+    public LiveData<List<Movie>> getUserFavourites(String id) {
+        //TODO not implemented yet
+        return null;
+    }
+
+    @Override
     public LiveData<List<AgeRating>> getAgeRatings() {
         executorService.execute(new Runnable() {
             @Override
@@ -135,5 +144,49 @@ public class RemoteRepository implements Repository {
     @Override
     public <T extends Movie> void updateMovie(T movie) {
         //TODO not implemented yet
+    }
+
+    @Override
+    public <T extends User> T getUserById(String id) {
+        //TODO not implemented yet
+        return null;
+    }
+
+    @Override
+    public <T extends User> LiveData<T> getUserByLogin(String login) {
+        //TODO not implemented yet
+        return null;
+    }
+
+    @Override
+    public <T extends User> void addUser(T user) {
+        //TODO not implemented yet
+    }
+
+    @Override
+    public <T extends User> void updateUser(T user) {
+        //TODO not implemented yet
+    }
+
+    @Override
+    public void addFavourite(FavoriteMovie favoriteMovie) {
+        //TODO not implemented yet
+    }
+
+    @Override
+    public void removeFavourite(FavoriteMovie favoriteMovie) {
+        //TODO not implemented yet
+    }
+
+    @Override
+    public Role getRoleById(Long id) {
+        //TODO not implemented yet
+        return null;
+    }
+
+    @Override
+    public Boolean isFavorite(String userId, Long movieId) {
+        //TODO not implemented yet
+        return null;
     }
 }

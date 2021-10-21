@@ -9,7 +9,6 @@ import androidx.annotation.NonNull;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.gson.Gson;
 import com.kinopoisklite.R;
 import com.kinopoisklite.databinding.MovieListElementBinding;
 import com.kinopoisklite.model.Movie;

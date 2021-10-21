@@ -15,6 +15,13 @@ android {
 
         buildConfigField "String", "KINOPOISK_API_KEY", '"9c3342dc-40c2-49aa-ac00-1705cf591512"'
 
+        buildConfigField "String", "GOOGLE_CLIENT_ID", '"522113449269-9tbdnt6fr4ic7p4f60fgm19p905tvanp.apps.googleusercontent.com"'
+        buildConfigField "String", "GOOGLE_CLIENT_SECRET", '"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"'
+        buildConfigField "String", "GOOGLE_REDIRECT_URI", '"http://localhost"'
+        buildConfigField "String", "GOOGLE_SCOPE", '"https://www.googleapis.com/auth/userinfo.profile"'
+
+        buildConfigField "String", "USER_AGENT", '"Mozilla/5.0 (Linux; Android 10; SM-J105H) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.164 Mobile Safari/537.36"'
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 

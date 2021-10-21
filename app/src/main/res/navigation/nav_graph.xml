@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_movieList_to_movie"
             app:destination="@id/movie" />
+        <action
+            android:id="@+id/action_movieList_to_userCabinet"
+            app:destination="@id/userCabinet" />
     </fragment>
     <fragment
         android:id="@+id/movie"
@@ -22,10 +25,34 @@
         <action
             android:id="@+id/action_movie_to_coverFragment"
             app:destination="@id/coverFragment" />
+        <action
+            android:id="@+id/action_movie_to_userCabinet"
+            app:destination="@id/userCabinet" />
     </fragment>
     <fragment
         android:id="@+id/coverFragment"
         android:name="com.kinopoisklite.view.CoverFragment"
         android:label="cover_fragment"
-        tools:layout="@layout/cover_fragment" />
+        tools:layout="@layout/cover_fragment" >
+        <action
+            android:id="@+id/action_coverFragment_to_userCabinet"
+            app:destination="@id/userCabinet" />
+    </fragment>
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.kinopoisklite.view.LoginFragment"
+        android:label="login_fragment"
+        tools:layout="@layout/login_fragment" />
+    <fragment
+        android:id="@+id/userCabinet"
+        android:name="com.kinopoisklite.view.UserCabinetView"
+        android:label="user_cabinet_fragment"
+        tools:layout="@layout/user_cabinet_fragment" >
+        <action
+            android:id="@+id/action_userCabinet_to_loginFragment"
+            app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_userCabinet_to_movieList"
+            app:destination="@id/movieList" />
+    </fragment>
 </navigation>

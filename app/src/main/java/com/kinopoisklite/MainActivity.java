@@ -4,7 +4,8 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.kinopoisklite.repository.MovieDTOFactory;
+import com.kinopoisklite.repository.dtoFactory.MovieDTOFactory;
+import com.kinopoisklite.repository.dtoFactory.UserDTOFactory;
 import com.kinopoisklite.repository.dtoVersion;
 import com.kinopoisklite.repository.ResourceManager;
 
@@ -18,5 +19,6 @@ public class MainActivity extends AppCompatActivity {
 
         ResourceManager.initRoom(getApplication());
         MovieDTOFactory.init(dtoVersion.ROOM);
+        UserDTOFactory.init(dtoVersion.ROOM);
     }
 }

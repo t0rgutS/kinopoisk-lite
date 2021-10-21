@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.Navigation;
 
+import com.kinopoisklite.R;
 import com.kinopoisklite.viewModel.CoverViewModel;
 import com.kinopoisklite.databinding.CoverFragmentBinding;
 
@@ -33,6 +34,12 @@ public class CoverFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Navigation.findNavController(v).popBackStack();
+            }
+        });
+        binding.toCabinet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Navigation.findNavController(v).navigate(R.id.action_coverFragment_to_userCabinet);
             }
         });
         return binding.getRoot();

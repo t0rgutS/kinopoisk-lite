@@ -9,4 +9,6 @@
     <color name="colorBackgroundMain">#404040</color>
     <color name="colorBlack">#000000</color>
     <color name="colorWhite">#ffffff</color>
+    <color name="colorDarkRed">#B31415</color>
+    <color name="colorVK">#4C75A3</color>
 </resources>

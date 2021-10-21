@@ -1,5 +1,6 @@
-package com.kinopoisklite.repository;
+package com.kinopoisklite.repository.dtoFactory;
 
+import com.kinopoisklite.repository.dtoVersion;
 import com.kinopoisklite.repository.remote.model.RemoteMovieDTO;
 import com.kinopoisklite.repository.room.model.RoomMovieDTO;
 import com.kinopoisklite.model.AgeRating;

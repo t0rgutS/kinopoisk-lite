@@ -6,14 +6,18 @@ import com.google.gson.Gson;
 import com.kinopoisklite.repository.network.ExternalDataProvider;
 import com.kinopoisklite.repository.remote.RemoteRepository;
 import com.kinopoisklite.repository.room.RoomRepository;
+import com.kinopoisklite.security.SessionManager;
+import com.kinopoisklite.security.mock.MockSessionManager;
 
 public class ResourceManager {
     private static Repository repository;
     private static Gson gson;
     private static ExternalDataProvider provider;
+    private static SessionManager sessionManager;
 
     public static void initRoom(Application application) {
         repository = new RoomRepository(application);
+        sessionManager = new MockSessionManager(application.getApplicationContext());
     }
 
     public static Gson getGson() {
@@ -32,5 +36,9 @@ public class ResourceManager {
         if (provider == null)
             provider = new ExternalDataProvider();
         return provider;
+    }
+
+    public static SessionManager getSessionManager() {
+        return sessionManager;
     }
 }

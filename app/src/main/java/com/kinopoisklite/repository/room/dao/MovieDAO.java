@@ -8,7 +8,9 @@ import androidx.room.Query;
 import androidx.room.Transaction;
 import androidx.room.Update;
 
+import com.kinopoisklite.model.FavoriteMovie;
 import com.kinopoisklite.repository.room.model.RoomMovieDTO;
+import com.kinopoisklite.repository.room.relation.FavouriteWithRecord;
 import com.kinopoisklite.repository.room.relation.MovieWithRating;
 
 import java.util.List;
@@ -18,6 +20,19 @@ public interface MovieDAO {
     @Transaction
     @Query("SELECT * FROM movies")
     LiveData<List<MovieWithRating>> getAllMovies();
+
+    @Transaction
+    @Query("SELECT * FROM favorite_movies WHERE user_id=:id")
+    LiveData<List<FavouriteWithRecord>> getUserFavourites(String id);
+
+    @Query("SELECT EXISTS (SELECT * FROM favorite_movies WHERE user_id=:userId AND movie_id=:movieId)")
+    Boolean isFavorite(String userId, Long movieId);
+
+    @Insert
+    void addFavourite(FavoriteMovie favoriteMovie);
+
+    @Delete
+    void removeFavourite(FavoriteMovie favoriteMovie);
 
     @Insert
     void addMovie(RoomMovieDTO movie);

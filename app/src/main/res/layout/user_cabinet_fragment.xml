@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.UserCabinetView">
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorBlack"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize"
+            android:layout_gravity="top"
+            android:background="@color/colorDarkGreen"
+            app:navigationIcon="?attr/homeAsUpIndicator"
+            app:titleTextColor="@color/colorBlack">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <Button
+                    android:id="@+id/logout"
+                    android:backgroundTint="@color/colorDarkGreen"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layoutDirection="rtl"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_alignParentRight="true"
+                    android:textColor="@color/colorWhite"
+                    android:text="Выйти" />
+            </RelativeLayout>
+
+        </androidx.appcompat.widget.Toolbar>
+
+
+        <RelativeLayout
+            android:id="@+id/cabinet"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="?actionBarSize"
+            android:layout_marginBottom="?actionBarSize"
+            android:visibility="visible">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/movie_list_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
+                android:layout_below="@id/fav_view"
+                android:paddingTop="10dp"/>
+
+            <TextView
+                android:id="@+id/fav_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="15dp"
+                android:layout_below="@id/avatar"
+                android:backgroundTint="@color/colorDarkGreen"
+                android:hint="Избранное"
+                android:textColor="@color/colorGreen"
+                android:textColorHint="@color/colorGreen"
+                android:textSize="20dp" />
+
+            <EditText
+                android:id="@+id/nameField"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/surnameField"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="30dp"
+                android:layout_toRightOf="@id/nameView"
+                android:backgroundTint="@color/colorDarkGreen"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:saveEnabled="false"
+                android:textColor="@color/colorGreen" />
+
+            <TextView
+                android:id="@+id/nameView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/avatar"
+                android:layout_below="@id/surnameView"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="35dp"
+                android:text="@string/name_hint"
+                android:textColor="@color/colorGreen" />
+
+            <EditText
+                android:id="@+id/surnameField"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/roleView"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="30dp"
+                android:layout_toRightOf="@id/surnameView"
+                android:backgroundTint="@color/colorDarkGreen"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:saveEnabled="false"
+                android:textColor="@color/colorGreen" />
+
+            <TextView
+                android:id="@+id/surnameView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/roleView"
+                android:layout_toRightOf="@id/avatar"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="20dp"
+                android:text="@string/surname_hint"
+                android:textColor="@color/colorGreen" />
+
+            <TextView
+                android:id="@+id/roleView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/loginView"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="5dp"
+                android:layout_toRightOf="@id/avatar"
+                android:text="@string/role_hint"
+                android:textColor="@color/colorGreen" />
+
+            <TextView
+                android:id="@+id/loginView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="5dp"
+                android:layout_toRightOf="@id/avatar"
+                android:text="@string/login_hint"
+                android:textColor="@color/colorGreen"
+                android:textSize="25dp" />
+
+            <ImageView
+                android:id="@+id/avatar"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/border"
+                android:scaleType="fitXY"
+                app:srcCompat="@android:drawable/ic_menu_myplaces" />
+        </RelativeLayout>
+
+        <com.google.android.material.bottomappbar.BottomAppBar
+            android:id="@+id/bottom_app_bar"
+            style="@style/Widget.MaterialComponents.BottomAppBar.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_gravity="bottom"
+            android:backgroundTint="@color/colorDarkGreen"
+            app:hideOnScroll="true" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+</FrameLayout>

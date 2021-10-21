@@ -9,22 +9,44 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.kinopoisklite.exception.PersistenceException;
-import com.kinopoisklite.repository.MovieDTOFactory;
 import com.kinopoisklite.model.AgeRating;
+import com.kinopoisklite.model.FavoriteMovie;
 import com.kinopoisklite.model.Movie;
+import com.kinopoisklite.model.User;
 import com.kinopoisklite.repository.ResourceManager;
+import com.kinopoisklite.repository.dtoFactory.MovieDTOFactory;
+import com.kinopoisklite.security.Actions;
 
 import java.io.FileNotFoundException;
 import java.util.List;
-import java.util.Map;
 
 import lombok.Getter;
-import lombok.Setter;
 
 public class MovieViewModel extends ViewModel {
     @Getter
-    @Setter
     private Movie savedMovie;
+
+    private Boolean favorite;
+
+    public void setSavedMovie(Movie savedMovie) {
+        this.savedMovie = savedMovie;
+        User sessionUser = ResourceManager.getSessionManager().getSessionUser();
+        if (sessionUser != null)
+            favorite = ResourceManager.getRepository().isFavorite(sessionUser.getId(), savedMovie.getId());
+        else
+            favorite = null;
+    }
+
+    public List<Actions> getAllowedActions() {
+        return ResourceManager.getSessionManager().getAllowedActions();
+    }
+
+    public Boolean canAddToFav() {
+        if (favorite == null)
+            return false;
+        return ResourceManager.getSessionManager()
+                .getAllowedActions().contains(Actions.ADD_TO_FAV) && !favorite;
+    }
 
     public LiveData<List<AgeRating>> getAgeRatings() {
         return ResourceManager.getRepository().getAgeRatings();
@@ -72,6 +94,23 @@ public class MovieViewModel extends ViewModel {
             ResourceManager.getRepository().addMovie(movie);
         } catch (Exception e) {
             throw new PersistenceException(e.getMessage());
+        }
+    }
+
+    public void addToFav() throws PersistenceException {
+        if (favorite != null && !favorite) {
+            try {
+                User sessionUser = ResourceManager.getSessionManager().getSessionUser();
+                if (sessionUser != null) {
+                    FavoriteMovie favoriteMovie = new FavoriteMovie();
+                    favoriteMovie.setUserId(sessionUser.getId());
+                    favoriteMovie.setMovieId(savedMovie.getId());
+                    ResourceManager.getRepository().addFavourite(favoriteMovie);
+                    favorite = true;
+                }
+            } catch (Exception e) {
+                throw new PersistenceException(e.getMessage());
+            }
         }
     }
 

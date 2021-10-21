@@ -1,24 +1,22 @@
-package com.kinopoisklite.security.mock;
+package com.kinopoisklite.security;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.kinopoisklite.model.User;
 import com.kinopoisklite.repository.ResourceManager;
-import com.kinopoisklite.security.Actions;
-import com.kinopoisklite.security.SessionManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MockSessionManager implements SessionManager {
+public class SessionManagerImpl implements SessionManager {
     private static final String SESSION_PREFERENCES = "SESSION_PREFERENCES";
     private static final String SESSION_USER_ID = "SESSION_USER_ID";
 
     private Context context;
     private User sessionUser;
 
-    public MockSessionManager(Context context) {
+    public SessionManagerImpl(Context context) {
         this.context = context;
     }
 

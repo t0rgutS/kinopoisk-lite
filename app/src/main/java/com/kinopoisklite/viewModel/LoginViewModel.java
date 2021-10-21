@@ -26,16 +26,17 @@ public class LoginViewModel extends ViewModel {
     public LiveData<User> authenticate(String login, String password) {
         return Transformations.map(ResourceManager.getRepository().getUserByLogin(login), user -> {
             if (user != null) {
-                if (user.getPassword().equals(password))
+                if (user.getPassword().equals(password)) {
                     ResourceManager.getSessionManager().setSessionUser(user);
+                    return user;
+                }
             }
-            return user;
+            return null;
         });
     }
 
     public LiveData<User> authenticateExternal(String authCode, AuthenticationProviders authProvider) throws IOException {
         TokenProvider tokenProvider = new GoogleTokenProvider();
-        // MutableLiveData<User> userLiveData = new MutableLiveData<>();
         return Transformations.switchMap(tokenProvider.getToken(authCode), providerResponse -> {
             String token = (String) providerResponse.get("access_token");
             UserInfoProvider userInfoProvider = new GoogleUserInfoProvider();
@@ -47,7 +48,7 @@ public class LoginViewModel extends ViewModel {
                         Role defaultRole = ResourceManager.getRepository().getRoleById(1L);
                         User newUser = UserDTOFactory.formCreateUserDTO(
                                 (String) userInfo.get("id"),
-                                (String) userInfo.get("name"),
+                                (String) userInfo.get("id"),
                                 (String) userInfo.get("given_name"),
                                 (String) userInfo.get("family_name"),
                                 null,
@@ -62,7 +63,7 @@ public class LoginViewModel extends ViewModel {
                     } else {
                         User updatedUser = UserDTOFactory.formUpdateUserDTO(
                                 existingUser.getId(),
-                                (String) userInfo.get("name"),
+                                existingUser.getLogin(),
                                 (String) userInfo.get("given_name"),
                                 (String) userInfo.get("family_name"),
                                 null,

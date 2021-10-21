@@ -65,17 +65,18 @@ public class UserCabinetView extends Fragment {
         if (sessionUser == null) {
             Navigation.findNavController(requireView()).navigate(R.id.action_userCabinet_to_loginFragment);
         } else {
-            binding.loginView.setText(sessionUser.getLogin());
             binding.nameField.setText(sessionUser.getFirstName());
             binding.surnameField.setText(sessionUser.getLastName());
             if (sessionUser.getExternal()) {
                 binding.nameField.setEnabled(false);
                 binding.surnameField.setEnabled(false);
                 binding.roleView.setText(sessionUser.getRole().getRoleName() + " (внешний)");
+                binding.loginView.setText(sessionUser.getFirstName() + " " + sessionUser.getLastName());
             } else {
                 binding.nameField.setEnabled(true);
                 binding.surnameField.setEnabled(true);
                 binding.roleView.setText(sessionUser.getRole().getRoleName());
+                binding.loginView.setText(sessionUser.getLogin());
             }
             binding.toolbar.setNavigationOnClickListener(new View.OnClickListener() {
                 @Override

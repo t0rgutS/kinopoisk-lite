@@ -185,7 +185,7 @@ public class MovieView extends Fragment {
                     binding.country.setAdapter(countryAdapter);
 
                 });
-        if (!mViewModel.getAllowedActions().contains(Actions.CREATE)) {
+        if (!mViewModel.getAllowedActions().contains(Actions.UPDATE)) {
             binding.title.setEnabled(false);
             binding.releaseYear.setEnabled(false);
             binding.duration.setEnabled(false);

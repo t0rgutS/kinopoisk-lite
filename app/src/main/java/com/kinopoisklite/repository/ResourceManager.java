@@ -7,7 +7,7 @@ import com.kinopoisklite.repository.network.ExternalDataProvider;
 import com.kinopoisklite.repository.remote.RemoteRepository;
 import com.kinopoisklite.repository.room.RoomRepository;
 import com.kinopoisklite.security.SessionManager;
-import com.kinopoisklite.security.mock.MockSessionManager;
+import com.kinopoisklite.security.SessionManagerImpl;
 
 public class ResourceManager {
     private static Repository repository;
@@ -17,7 +17,7 @@ public class ResourceManager {
 
     public static void initRoom(Application application) {
         repository = new RoomRepository(application);
-        sessionManager = new MockSessionManager(application.getApplicationContext());
+        sessionManager = new SessionManagerImpl(application.getApplicationContext());
     }
 
     public static Gson getGson() {

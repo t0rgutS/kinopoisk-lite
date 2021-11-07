@@ -56,7 +56,7 @@ public class MovieView extends Fragment {
         binding.toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (ResourceManager.getSessionManager().getAllowedActions().contains(Actions.CREATE)) {
+                if (ResourceManager.getSessionManager().getAllowedActions().contains(Actions.UPDATE)) {
                     try {
                         mViewModel.saveMovie(binding.title.getText().toString(),
                                 binding.releaseYear.getText().toString(),

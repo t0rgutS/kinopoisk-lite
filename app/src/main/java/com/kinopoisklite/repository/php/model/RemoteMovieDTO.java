@@ -1,4 +1,4 @@
-package com.kinopoisklite.repository.remote.model;
+package com.kinopoisklite.repository.php.model;
 
 import androidx.annotation.NonNull;
 
@@ -20,7 +20,7 @@ public class RemoteMovieDTO extends Movie {
     private String ratingCategory;
 
     public RemoteMovieDTO(JSONObject object) throws JSONException {
-        id = object.getLong("id");
+        id = object.getString("id");
         title = object.getString("title");
         releaseYear = object.getInt("releaseYear");
         duration = object.getInt("duration");

@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData;
 import com.kinopoisklite.model.AgeRating;
 import com.kinopoisklite.model.FavoriteMovie;
 import com.kinopoisklite.model.Movie;
-import com.kinopoisklite.model.Role;
+import com.kinopoisklite.model.Token;
 import com.kinopoisklite.model.User;
 
 import java.util.List;
@@ -13,15 +13,15 @@ import java.util.List;
 public interface Repository {
     <T extends Movie> LiveData<List<T>> getAllMovies();
 
-    LiveData<List<Movie>> getUserFavourites(String id);
+    LiveData<List<Movie>> getUserFavourites(User user);
 
     LiveData<List<AgeRating>> getAgeRatings();
 
-    <T extends Movie> void deleteMovie(T movie);
+    <T extends Movie> void deleteMovie(T movie, Token token);
 
-    <T extends Movie> void updateMovie(T movie);
+    <T extends Movie> void updateMovie(T movie, Token token);
 
-    <T extends Movie> void addMovie(T movie);
+    <T extends Movie> void addMovie(T movie, Token token);
 
     <T extends User> T getUserById(String id);
 
@@ -35,7 +35,12 @@ public interface Repository {
 
     void removeFavourite(FavoriteMovie favoriteMovie);
 
-    Role getRoleById(Long id);
+    Boolean isFavorite(String userId, String movieId);
 
-    Boolean isFavorite(String userId, Long movieId);
+    void addToken(Token token);
+
+    void deleteToken(Token token);
+
+    Token getTokenByUserId(String userId);
+
 }

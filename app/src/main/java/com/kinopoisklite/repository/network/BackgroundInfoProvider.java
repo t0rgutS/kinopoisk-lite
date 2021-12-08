@@ -18,12 +18,12 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class ExternalDataProvider {
+public class BackgroundInfoProvider {
     private KinopoiskApi api;
     private MutableLiveData<List<String>> genres;
     private MutableLiveData<List<String>> countries;
 
-    public ExternalDataProvider() {
+    public BackgroundInfoProvider() {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://kinopoiskapiunofficial.tech/")
                 .addConverterFactory(GsonConverterFactory.create())
@@ -47,7 +47,6 @@ public class ExternalDataProvider {
             @Override
             public void onResponse(Call<GenresAndCountries> call, Response<GenresAndCountries> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    Map<String, List<String>> map = new HashMap<>();
                     genres.setValue(response.body().getGenres()
                             .stream().map(genre -> genre.getGenre()).collect(Collectors.toList()));
                     countries.setValue(response.body().getCountries()

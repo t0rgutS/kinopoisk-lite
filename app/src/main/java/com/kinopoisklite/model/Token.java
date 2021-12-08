@@ -14,24 +14,21 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@Entity(tableName = "roles")
-public class Role {
+@Entity(tableName = "tokens")
+public class Token {
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo
     private Long id;
 
-    @ColumnInfo(name = "role_name")
+    @ColumnInfo(name = "access_token")
     @NotNull
-    private String roleName;
+    private String accessToken;
 
-    @ColumnInfo(name = "access_level")
+    @ColumnInfo(name = "refresh_token")
     @NotNull
-    private Integer accessLevel;
+    private String refreshToken;
 
-    @Ignore
-    public Role(Long id, String roleName, Integer accessLevel) {
-        this.id = id;
-        this.roleName = roleName;
-        this.accessLevel = accessLevel;
-    }
+    @ColumnInfo(name = "user_id")
+    @NotNull
+    private String userId;
 }

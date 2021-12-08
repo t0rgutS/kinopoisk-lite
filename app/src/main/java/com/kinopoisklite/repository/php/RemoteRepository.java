@@ -1,4 +1,4 @@
-package com.kinopoisklite.repository.remote;
+package com.kinopoisklite.repository.php;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -7,9 +7,9 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.kinopoisklite.model.FavoriteMovie;
-import com.kinopoisklite.model.Role;
+import com.kinopoisklite.model.Token;
 import com.kinopoisklite.model.User;
-import com.kinopoisklite.repository.remote.model.RemoteMovieDTO;
+import com.kinopoisklite.repository.php.model.RemoteMovieDTO;
 import com.kinopoisklite.model.AgeRating;
 import com.kinopoisklite.model.Movie;
 import com.kinopoisklite.repository.Repository;
@@ -68,7 +68,7 @@ public class RemoteRepository implements Repository {
 
     @SneakyThrows
     @Override
-    public void deleteMovie(Movie movie) {
+    public void deleteMovie(Movie movie, Token token) {
         executorService.execute(new Runnable() {
             @SneakyThrows
             @Override
@@ -90,7 +90,7 @@ public class RemoteRepository implements Repository {
 
     @SneakyThrows
     @Override
-    public void addMovie(Movie movie) {
+    public void addMovie(Movie movie, Token token) {
         executorService.execute(new Runnable() {
             @SneakyThrows
             @Override
@@ -109,7 +109,7 @@ public class RemoteRepository implements Repository {
     }
 
     @Override
-    public LiveData<List<Movie>> getUserFavourites(String id) {
+    public LiveData<List<Movie>> getUserFavourites(User user) {
         //TODO not implemented yet
         return null;
     }
@@ -142,7 +142,7 @@ public class RemoteRepository implements Repository {
     }
 
     @Override
-    public <T extends Movie> void updateMovie(T movie) {
+    public <T extends Movie> void updateMovie(T movie, Token token) {
         //TODO not implemented yet
     }
 
@@ -179,14 +179,24 @@ public class RemoteRepository implements Repository {
     }
 
     @Override
-    public Role getRoleById(Long id) {
+    public Boolean isFavorite(String userId, String movieId) {
         //TODO not implemented yet
         return null;
     }
 
     @Override
-    public Boolean isFavorite(String userId, Long movieId) {
-        //TODO not implemented yet
+    public void addToken(Token token) {
+        //Not implemented
+    }
+
+    @Override
+    public void deleteToken(Token token) {
+        //Not implemented
+    }
+
+    @Override
+    public Token getTokenByUserId(String userId) {
+        //Not implemented
         return null;
     }
 }

@@ -1,5 +1,6 @@
 package com.kinopoisklite.model;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.room.ColumnInfo;
 import androidx.room.Ignore;
@@ -10,17 +11,19 @@ import com.google.gson.Gson;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.UUID;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-@NoArgsConstructor
 public class Movie {
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     @ColumnInfo
-    protected Long id;
+    @NonNull
+    protected String id;
     @ColumnInfo
     protected String title;
     @ColumnInfo(name = "release_year")
@@ -40,13 +43,17 @@ public class Movie {
 
     @Ignore
     public Movie(JSONObject object) throws JSONException {
-        id = object.getLong("id");
+        id = object.getString("id");
         title = object.getString("title");
         releaseYear = object.getInt("releaseYear");
         duration = object.getInt("duration");
         description = object.getString("description");
         if (object.has("ageRating"))
             ageRating = new AgeRating(object.getJSONObject("ageRating"));
+    }
+
+    public Movie() {
+        id = UUID.randomUUID().toString();
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.kinopoisklite.repository.network;
+package com.kinopoisklite.repository.network.userInfo;
 
 import androidx.lifecycle.LiveData;
 

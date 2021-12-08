@@ -15,8 +15,11 @@ public interface AgeRatingDAO {
     LiveData<List<AgeRating>> getAgeRatings();
 
     @Query("SELECT EXISTS(SELECT * FROM age_ratings WHERE id = :id)")
-    Boolean isRatingExists(Long id);
+    Boolean isRatingExists(String id);
 
     @Insert
     void addAgeRating(AgeRating rating);
+
+    @Insert
+    void addAgeRatings(List<AgeRating> ratings);
 }

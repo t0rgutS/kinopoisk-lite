@@ -71,11 +71,13 @@ public class MovieViewModel extends ViewModel {
         try {
             if (savedMovie == null)
                 return;
+            User user = ResourceManager.getSessionManager().getSessionUser();
             Movie movie = MovieDTOFactory.formUpdateMovieDTO(title, releaseYear, duration,
                     genre, country,
                     desctiption, rating, coverUri, savedMovie);
             if (!savedMovie.equals(movie)) {
-                ResourceManager.getRepository().updateMovie(movie);
+                ResourceManager.getRepository().updateMovie(movie,
+                        user != null ? user.getToken() : null);
                 movie.setAgeRating(rating);
                 savedMovie = movie;
             }
@@ -88,10 +90,12 @@ public class MovieViewModel extends ViewModel {
                          String genre, String country,
                          String desctiption, AgeRating rating, String coverUri) throws PersistenceException {
         try {
+            User user = ResourceManager.getSessionManager().getSessionUser();
             Movie movie = MovieDTOFactory.formAddMovieDTO(title, releaseYear, duration,
                     genre, country,
                     desctiption, rating, coverUri);
-            ResourceManager.getRepository().addMovie(movie);
+            ResourceManager.getRepository().addMovie(movie,
+                    user != null ? user.getToken() : null);
         } catch (Exception e) {
             throw new PersistenceException(e.getMessage());
         }
@@ -105,6 +109,7 @@ public class MovieViewModel extends ViewModel {
                     FavoriteMovie favoriteMovie = new FavoriteMovie();
                     favoriteMovie.setUserId(sessionUser.getId());
                     favoriteMovie.setMovieId(savedMovie.getId());
+                    favoriteMovie.setMovie(savedMovie);
                     ResourceManager.getRepository().addFavourite(favoriteMovie);
                     favorite = true;
                 }

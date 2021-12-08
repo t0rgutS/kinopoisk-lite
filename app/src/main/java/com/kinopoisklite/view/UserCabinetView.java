@@ -70,12 +70,12 @@ public class UserCabinetView extends Fragment {
             if (sessionUser.getExternal()) {
                 binding.nameField.setEnabled(false);
                 binding.surnameField.setEnabled(false);
-                binding.roleView.setText(sessionUser.getRole().getRoleName() + " (внешний)");
+                binding.roleView.setText(sessionUser.getRole().name() + " (внешний)");
                 binding.loginView.setText(sessionUser.getFirstName() + " " + sessionUser.getLastName());
             } else {
                 binding.nameField.setEnabled(true);
                 binding.surnameField.setEnabled(true);
-                binding.roleView.setText(sessionUser.getRole().getRoleName());
+                binding.roleView.setText(sessionUser.getRole().name());
                 binding.loginView.setText(sessionUser.getLogin());
             }
             binding.toolbar.setNavigationOnClickListener(new View.OnClickListener() {

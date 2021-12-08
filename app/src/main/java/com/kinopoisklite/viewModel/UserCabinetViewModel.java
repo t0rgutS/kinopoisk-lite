@@ -7,7 +7,7 @@ import com.kinopoisklite.model.FavoriteMovie;
 import com.kinopoisklite.model.Movie;
 import com.kinopoisklite.model.User;
 import com.kinopoisklite.repository.ResourceManager;
-import com.kinopoisklite.repository.dtoFactory.UserDTOFactory;
+import com.kinopoisklite.repository.dtoFactory.UserRequestFactory;
 
 import java.util.List;
 
@@ -18,15 +18,19 @@ public class UserCabinetViewModel extends ViewModel {
     }
 
     public LiveData<List<Movie>> getFavourites() {
-        String userId = ResourceManager.getSessionManager().getSessionUser().getId();
-        return ResourceManager.getRepository().getUserFavourites(userId);
+        User user = ResourceManager.getSessionManager().getSessionUser();
+        if (user.getFavoriteMovies() == null)
+            user.setFavoriteMovies(ResourceManager.getRepository().getUserFavourites(user));
+        return user.getFavoriteMovies();
     }
 
     public void removeFavourite(Movie movie) {
-        String userId = ResourceManager.getSessionManager().getSessionUser().getId();
+        User user = ResourceManager.getSessionManager().getSessionUser();
         FavoriteMovie fav = new FavoriteMovie();
-        fav.setUserId(userId);
+        fav.setUser(user);
+        fav.setUserId(user.getId());
         fav.setMovieId(movie.getId());
+        fav.setMovie(movie);
         ResourceManager.getRepository().removeFavourite(fav);
     }
 
@@ -35,7 +39,7 @@ public class UserCabinetViewModel extends ViewModel {
         if (!user.getExternal()) {
             if (!user.getFirstName().equals(firstName) && !user.getLastName().equals(lastName)) {
                 ResourceManager.getRepository().updateUser(
-                        UserDTOFactory.formUpdateUserDTO(
+                        UserRequestFactory.formUpdateUserRequest(
                                 user.getId(), user.getLogin(), firstName, lastName,
                                 user.getPassword(), user.getExternal(), user.getRole(), user)
                 );

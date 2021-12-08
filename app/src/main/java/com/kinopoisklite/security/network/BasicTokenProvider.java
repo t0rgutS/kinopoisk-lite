@@ -1,13 +1,13 @@
-package com.kinopoisklite.security.google;
+package com.kinopoisklite.security.network;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.kinopoisklite.BuildConfig;
 import com.kinopoisklite.security.TokenProvider;
-import com.kinopoisklite.security.google.api.GoogleTokenService;
+import com.kinopoisklite.security.network.api.ServerTokenService;
 
 import java.io.IOException;
+import java.util.Base64;
 import java.util.Map;
 
 import retrofit2.Call;
@@ -16,35 +16,31 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class GoogleTokenProvider implements TokenProvider {
-    private GoogleTokenService tokenService;
+public class BasicTokenProvider implements TokenProvider {
+    private ServerTokenService tokenService;
 
-    public GoogleTokenProvider() {
+    public BasicTokenProvider() {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://oauth2.googleapis.com")
+                .baseUrl("http://192.168.1.6/api/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        tokenService = retrofit.create(GoogleTokenService.class);
+        tokenService = retrofit.create(ServerTokenService.class);
     }
 
-    public LiveData<Map> getToken(String authCode) throws IOException {
+    @Override
+    public LiveData<Map> getToken(String credentials) throws IOException {
         MutableLiveData<Map> tokenData = new MutableLiveData<>();
-        tokenService.getToken(authCode,
-                BuildConfig.GOOGLE_CLIENT_ID,
-                BuildConfig.GOOGLE_CLIENT_SECRET,
-                BuildConfig.GOOGLE_REDIRECT_URI,
-                "authorization_code").enqueue(new Callback<Map>() {
+        tokenService.getToken("Basic "
+                + Base64.getEncoder().encodeToString(credentials.getBytes())).enqueue(new Callback<Map>() {
             @Override
             public void onResponse(Call<Map> call, Response<Map> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     tokenData.setValue(response.body());
-
                 }
             }
 
             @Override
             public void onFailure(Call<Map> call, Throwable t) {
-
             }
         });
         return tokenData;

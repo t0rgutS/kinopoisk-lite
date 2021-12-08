@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.kinopoisklite.model.Movie;
+import com.kinopoisklite.model.User;
 import com.kinopoisklite.repository.ResourceManager;
 import com.kinopoisklite.security.Actions;
 
@@ -19,6 +20,8 @@ public class MovieListViewModel extends ViewModel {
     }
 
     public void deleteMovie(Movie movie) {
-        ResourceManager.getRepository().deleteMovie(movie);
+        User user = ResourceManager.getSessionManager().getSessionUser();
+        ResourceManager.getRepository().deleteMovie(movie,
+                user != null ? user.getToken() : null);
     }
 }

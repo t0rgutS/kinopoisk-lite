@@ -21,8 +21,11 @@ public class FavoriteMovie {
 
     @ColumnInfo(name = "movie_id")
     @NotNull
-    private Long movieId;
+    private String movieId;
 
     @Ignore
     private Movie movie;
+
+    @Ignore
+    private User user;
 }

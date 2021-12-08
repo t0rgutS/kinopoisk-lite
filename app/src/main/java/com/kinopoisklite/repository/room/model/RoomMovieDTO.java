@@ -19,5 +19,5 @@ import lombok.Setter;
 public class RoomMovieDTO extends Movie {
     @ColumnInfo(name = "age_rating_id")
     @NotNull
-    private Long ageRatingId;
+    private String ageRatingId;
 }

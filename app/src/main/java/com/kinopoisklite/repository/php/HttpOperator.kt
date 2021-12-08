@@ -1,4 +1,4 @@
-package com.kinopoisklite.repository.remote
+package com.kinopoisklite.repository.php
 
 import com.kinopoisklite.exception.ServerSideException
 import org.json.JSONArray

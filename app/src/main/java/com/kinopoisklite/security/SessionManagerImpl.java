@@ -34,13 +34,15 @@ public class SessionManagerImpl implements SessionManager {
         List<Actions> allowed = new ArrayList<>();
         User sessionUser = getSessionUser();
         if (sessionUser != null) {
-            Integer accessLevel = sessionUser.getRole().getAccessLevel();
-            allowed.add(Actions.ADD_TO_FAV);
-            if (accessLevel > 1)
-                allowed.add(Actions.UPDATE);
-            if (accessLevel > 2) {
-                allowed.add(Actions.CREATE);
-                allowed.add(Actions.DELETE);
+            switch (sessionUser.getRole()) {
+                case ROLE_ADMIN: {
+                    allowed.add(Actions.CREATE);
+                    allowed.add(Actions.DELETE);
+                }
+                case ROLE_MODER:
+                    allowed.add(Actions.UPDATE);
+                case ROLE_USER:
+                    allowed.add(Actions.ADD_TO_FAV);
             }
         }
         return allowed;

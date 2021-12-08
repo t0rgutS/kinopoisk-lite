@@ -4,10 +4,10 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.kinopoisklite.repository.dtoFactory.MovieDTOFactory;
-import com.kinopoisklite.repository.dtoFactory.UserDTOFactory;
-import com.kinopoisklite.repository.dtoVersion;
 import com.kinopoisklite.repository.ResourceManager;
+import com.kinopoisklite.repository.dtoFactory.MovieDTOFactory;
+import com.kinopoisklite.repository.dtoFactory.UserRequestFactory;
+import com.kinopoisklite.repository.Version;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -17,8 +17,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ResourceManager.initRoom(getApplication());
-        MovieDTOFactory.init(dtoVersion.ROOM);
-        UserDTOFactory.init(dtoVersion.ROOM);
+        ResourceManager.init(getApplication(), Version.NETWORK);
+        MovieDTOFactory.init(Version.ROOM);
+        UserRequestFactory.init(Version.ROOM);
     }
 }

@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.kinopoisklite.BuildConfig;
 import com.kinopoisklite.databinding.LoginFragmentBinding;
+import com.kinopoisklite.security.AuthenticationProviders;
 import com.kinopoisklite.viewModel.LoginViewModel;
 import com.kinopoisklite.R;
 
@@ -49,27 +50,32 @@ public class LoginFragment extends Fragment {
         binding.login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!binding.username.getText().toString().isEmpty()
-                        && !binding.password.getText().toString().isEmpty()) {
-                    mViewModel.authenticate(binding.username.getText().toString(),
-                            binding.password.getText().toString()).observe(getViewLifecycleOwner(), sessionUser -> {
-                        if (sessionUser != null)
-                            Navigation.findNavController(v).popBackStack();
-                        else
-                            Toast.makeText(requireContext(), "Неверный логин или пароль!",
-                                    Toast.LENGTH_LONG).show();
-                    });
-                } else
-                    Toast.makeText(requireContext(), "Введите логин и пароль!",
-                            Toast.LENGTH_LONG).show();
+                try {
+                    if (!binding.username.getText().toString().isEmpty()
+                            && !binding.password.getText().toString().isEmpty()) {
+                        mViewModel.authenticate(binding.username.getText().toString(),
+                                binding.password.getText().toString()).observe(getViewLifecycleOwner(), sessionUser -> {
+                            if (sessionUser != null)
+                                Navigation.findNavController(v).popBackStack();
+                            else
+                                Toast.makeText(requireContext(), "Неверный логин или пароль!",
+                                        Toast.LENGTH_LONG).show();
+                        });
+                    } else
+                        Toast.makeText(requireContext(), "Введите логин и пароль!",
+                                Toast.LENGTH_LONG).show();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Toast.makeText(requireContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                }
             }
         });
         binding.loginVK.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Map<String, String> providerParams = mViewModel
-                        .getProviderParams(LoginViewModel.AuthenticationProviders.VK);
-                externalAuth(LoginViewModel.AuthenticationProviders.VK,
+                        .getProviderParams(AuthenticationProviders.VK);
+                externalAuth(AuthenticationProviders.VK,
                         providerParams.get("uri"), providerParams.get("authCodeParam"),
                         providerParams.get("errorParam"));
             }
@@ -78,15 +84,15 @@ public class LoginFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Map<String, String> providerParams = mViewModel
-                        .getProviderParams(LoginViewModel.AuthenticationProviders.GOOGLE);
-                externalAuth(LoginViewModel.AuthenticationProviders.GOOGLE,
+                        .getProviderParams(AuthenticationProviders.GOOGLE);
+                externalAuth(AuthenticationProviders.GOOGLE,
                         providerParams.get("uri"), providerParams.get("authCodeParam"),
                         providerParams.get("errorParam"));
             }
         });
     }
 
-    private void externalAuth(LoginViewModel.AuthenticationProviders providerCode,
+    private void externalAuth(AuthenticationProviders providerCode,
                               String uri, String authCodeParam, String errorParam) {
         binding.externalAuth.setVisibility(View.VISIBLE);
         binding.externalAuth.getSettings().setJavaScriptEnabled(true);

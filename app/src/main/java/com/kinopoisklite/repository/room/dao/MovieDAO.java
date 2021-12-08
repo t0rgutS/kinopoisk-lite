@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Transaction;
 import androidx.room.Update;
@@ -26,7 +27,7 @@ public interface MovieDAO {
     LiveData<List<FavouriteWithRecord>> getUserFavourites(String id);
 
     @Query("SELECT EXISTS (SELECT * FROM favorite_movies WHERE user_id=:userId AND movie_id=:movieId)")
-    Boolean isFavorite(String userId, Long movieId);
+    Boolean isFavorite(String userId, String movieId);
 
     @Insert
     void addFavourite(FavoriteMovie favoriteMovie);
@@ -34,7 +35,7 @@ public interface MovieDAO {
     @Delete
     void removeFavourite(FavoriteMovie favoriteMovie);
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void addMovie(RoomMovieDTO movie);
 
     @Update

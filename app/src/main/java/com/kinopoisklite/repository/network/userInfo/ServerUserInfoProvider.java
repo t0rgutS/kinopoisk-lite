@@ -1,9 +1,9 @@
-package com.kinopoisklite.repository.network;
+package com.kinopoisklite.repository.network.userInfo;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.kinopoisklite.repository.network.api.GoogleApi;
+import com.kinopoisklite.repository.network.api.UserApi;
 
 import java.io.IOException;
 import java.util.Map;
@@ -14,17 +14,18 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class GoogleUserInfoProvider implements UserInfoProvider {
-    private GoogleApi api;
+public class ServerUserInfoProvider implements UserInfoProvider {
+    private UserApi api;
 
-    public GoogleUserInfoProvider() {
+    public ServerUserInfoProvider() {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://www.googleapis.com")
+                .baseUrl("http://192.168.1.6/api/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        api = retrofit.create(GoogleApi.class);
+        api = retrofit.create(UserApi.class);
     }
 
+    @Override
     public LiveData<Map> getUserInfo(String token) throws IOException {
         MutableLiveData<Map> userInfo = new MutableLiveData<>();
         api.getUserInfo("Bearer " + token).enqueue(new Callback<Map>() {

@@ -1,4 +1,4 @@
-package com.kinopoisklite.security.google.api;
+package com.kinopoisklite.security.local.api;
 
 import java.util.Map;
 

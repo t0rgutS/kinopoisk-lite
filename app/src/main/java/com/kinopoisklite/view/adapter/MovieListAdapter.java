@@ -13,6 +13,7 @@ import com.kinopoisklite.R;
 import com.kinopoisklite.databinding.MovieListElementBinding;
 import com.kinopoisklite.model.Movie;
 import com.kinopoisklite.repository.ResourceManager;
+import com.kinopoisklite.repository.network.model.ServerMovieDTO;
 
 import java.util.List;
 
@@ -47,6 +48,10 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Movi
                 public void onClick(View v) {
                     Bundle bundle = new Bundle();
                     bundle.putString("movie", ResourceManager.getGson().toJson(movie));
+                    if(movie instanceof ServerMovieDTO) {
+                        bundle.putString("cover", ResourceManager.getGson()
+                                .toJson(((ServerMovieDTO) movie).getCover()));
+                    }
                     Navigation.findNavController(v)
                             .navigate(R.id.action_movieList_to_movie, bundle);
                 }
@@ -60,6 +65,8 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Movi
 
     @Override
     public int getItemCount() {
+        if (movies == null)
+            return 0;
         return movies.size();
     }
 

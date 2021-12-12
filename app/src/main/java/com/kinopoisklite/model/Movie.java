@@ -60,8 +60,8 @@ public class Movie {
     public boolean equals(@Nullable Object obj) {
         if (obj == null)
             return false;
-        if (obj.getClass() != getClass())
-            return false;
+     //   if (obj.getClass() != getClass())
+     //       return false;
         Movie second = (Movie) obj;
         if (!this.id.equals(second.id)
                 || !this.title.equals(second.title)

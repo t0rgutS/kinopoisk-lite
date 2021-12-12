@@ -1,5 +1,7 @@
 package com.kinopoisklite.security.network;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -21,7 +23,7 @@ public class BasicTokenProvider implements TokenProvider {
 
     public BasicTokenProvider() {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.1.6/api/")
+                .baseUrl("http://192.168.1.6:8080/api/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         tokenService = retrofit.create(ServerTokenService.class);
@@ -36,6 +38,15 @@ public class BasicTokenProvider implements TokenProvider {
             public void onResponse(Call<Map> call, Response<Map> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     tokenData.setValue(response.body());
+                } else if (!response.isSuccessful()) {
+                    try {
+                        if (response.errorBody() == null)
+                            Log.i("Ошибка получения токена: ", String.valueOf(response.code()));
+                        else
+                            Log.i("Ошибка получения токена: ", response.errorBody().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 

@@ -9,9 +9,9 @@ import retrofit2.http.GET;
 import retrofit2.http.Path;
 
 public interface AgeRatingApi {
-    @GET("/ageRatings")
+    @GET("ageRatings")
     Call<List<AgeRating>> getAllRatings();
 
-    @GET("/ageRatings/{id}")
+    @GET("ageRatings/{id}")
     Call<AgeRating> getRating(@Path("id") String ageRatingId);
 }

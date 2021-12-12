@@ -49,4 +49,11 @@ public class AgeRatingAdapter extends ArrayAdapter<AgeRating> {
         }).findFirst().orElse(null);
         return ageRatings.indexOf(found);
     }
+
+    @Override
+    public int getCount() {
+        if (ageRatings == null)
+            return 0;
+        return ageRatings.size();
+    }
 }

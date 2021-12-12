@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         ResourceManager.init(getApplication(), Version.NETWORK);
-        MovieDTOFactory.init(Version.ROOM);
+        MovieDTOFactory.init(this, Version.NETWORK);
         UserRequestFactory.init(Version.ROOM);
     }
 }

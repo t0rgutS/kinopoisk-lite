@@ -14,6 +14,8 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.Navigation;
 
 import com.kinopoisklite.R;
+import com.kinopoisklite.model.Movie;
+import com.kinopoisklite.repository.ResourceManager;
 import com.kinopoisklite.viewModel.CoverViewModel;
 import com.kinopoisklite.databinding.CoverFragmentBinding;
 
@@ -50,8 +52,8 @@ public class CoverFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         mViewModel = ViewModelProviders.of(this).get(CoverViewModel.class);
         if (getArguments() != null) {
-            String coverUri = getArguments().getString("cover");
-            mViewModel.setCoverUri(coverUri);
+            mViewModel.setCoverUri(getArguments().getString("coverUri"));
+            mViewModel.setCoverContent(getArguments().getString("coverContent"));
             try {
                 Bitmap cover = mViewModel.getCover(requireActivity());
                 if (cover != null)

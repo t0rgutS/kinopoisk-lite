@@ -28,6 +28,8 @@ import com.kinopoisklite.exception.PersistenceException;
 import com.kinopoisklite.model.AgeRating;
 import com.kinopoisklite.model.Movie;
 import com.kinopoisklite.repository.ResourceManager;
+import com.kinopoisklite.repository.network.model.ServerCoverDTO;
+import com.kinopoisklite.repository.network.model.ServerMovieDTO;
 import com.kinopoisklite.security.Actions;
 import com.kinopoisklite.view.adapter.AgeRatingAdapter;
 import com.kinopoisklite.viewModel.MovieViewModel;
@@ -40,6 +42,7 @@ public class MovieView extends Fragment {
     private MovieViewModel mViewModel;
 
     private String coverUri = null;
+    private Bitmap currentCover = null;
     private ActivityResultLauncher<String[]> coverLauncher;
     private PopupMenu coverPopupMenu;
 
@@ -152,17 +155,24 @@ public class MovieView extends Fragment {
                 binding.duration.setText(String.valueOf(movie.getDuration()));
                 binding.genre.setText(movie.getGenre());
                 binding.country.setText(movie.getCountry());
-                if (movie.getCoverUri() != null && !movie.getCoverUri().isEmpty()) {
+                // if (movie.getCoverUri() != null && !movie.getCoverUri().isEmpty()) {
+                try {
                     coverUri = movie.getCoverUri();
-                    try {
-                        Bitmap cover = mViewModel.getCover(requireActivity(), coverUri);
-                        if (cover != null)
-                            binding.cover.setImageBitmap(cover);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                    if (coverUri != null)
+                        currentCover = mViewModel.getCover(requireActivity(), coverUri);
+                    else if (getArguments().getString("cover") != null) {
+                        ServerCoverDTO coverDTO = ResourceManager.getGson()
+                                .fromJson(getArguments().getString("cover"),
+                                        ServerCoverDTO.class);
+                        currentCover = mViewModel.getCover(coverDTO.getContent());
                     }
+                    if (currentCover != null)
+                        binding.cover.setImageBitmap(currentCover);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
                 }
+                //   }
                 binding.toolbar.setTitle("Фильм");
             } else {
                 binding.fab.setVisibility(View.VISIBLE);
@@ -204,7 +214,7 @@ public class MovieView extends Fragment {
             binding.cover.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (coverUri == null) {
+                    if (currentCover == null) {
                         coverLauncher.launch(new String[]{"image/*"});
                     } else {
                         coverPopupMenu.show();
@@ -235,14 +245,18 @@ public class MovieView extends Fragment {
                             coverUri = result.toString();
                             try {
                                 Bitmap cover = mViewModel.getCover(parent, result.toString());
-                                if (cover != null)
+                                if (cover != null) {
                                     binding.cover.setImageBitmap(cover);
+                                    currentCover = cover;
+                                }
                             } catch (Exception e) {
                                 e.printStackTrace();
                                 Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
                             }
-                        } else if (coverUri != null)
+                        } else if (coverUri != null) {
                             coverUri = null;
+                            currentCover = null;
+                        }
                     }
                 });
     }
@@ -265,7 +279,15 @@ public class MovieView extends Fragment {
                                     ((AgeRating) binding.ageRating.getSelectedItem()),
                                     coverUri);
                             Bundle bundle = new Bundle();
-                            bundle.putString("cover", coverUri);
+                            if (coverUri != null)
+                                bundle.putString("coverUri", coverUri);
+                            else if (getArguments() != null)
+                                if (getArguments().getString("cover") != null)
+                                    bundle.putString("coverContent",
+                                            ResourceManager.getGson()
+                                                    .fromJson(getArguments()
+                                                                    .getString("cover"),
+                                                            ServerCoverDTO.class).getContent());
                             Navigation.findNavController(v).navigate(R.id.action_movie_to_coverFragment, bundle);
                             return true;
                         } catch (PersistenceException e) {

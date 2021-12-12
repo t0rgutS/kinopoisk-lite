@@ -13,13 +13,12 @@ import com.kinopoisklite.repository.network.userInfo.UserInfoProvider;
 import com.kinopoisklite.security.AuthManager;
 import com.kinopoisklite.security.AuthenticationProviders;
 import com.kinopoisklite.security.TokenProvider;
-import com.kinopoisklite.security.local.GoogleTokenProvider;
 
 import java.io.IOException;
 
 public class ServerAuthManager implements AuthManager {
 
-    private LiveData<User> authenticate(TokenProvider tokenProvider, String credentials) throws IOException {
+    private LiveData<User> authenticate(TokenProvider tokenProvider, String credentials, boolean external) throws IOException {
         return Transformations.switchMap(tokenProvider.getToken(credentials), providerResponse -> {
             Token tokenData = new Token();
             tokenData.setAccessToken((String) providerResponse.get("token"));
@@ -36,7 +35,7 @@ public class ServerAuthManager implements AuthManager {
                                         (String) userInfo.get("login"),
                                         (String) userInfo.get("firstName"),
                                         (String) userInfo.get("lastName"),
-                                        true,
+                                        external,
                                         User.Roles.valueOf((String) userInfo.get("role"))
                                 );
                                 tokenData.setUserId(newUser.getId());
@@ -54,7 +53,7 @@ public class ServerAuthManager implements AuthManager {
                                         (String) userInfo.get("firstName"),
                                         (String) userInfo.get("lastName"),
                                         null,
-                                        true,
+                                        external,
                                         existingUser.getRole(),
                                         existingUser
                                 );
@@ -78,12 +77,12 @@ public class ServerAuthManager implements AuthManager {
     @Override
     public LiveData<User> authenticateInternal(String login, String password) throws IOException {
         TokenProvider tokenProvider = new BasicTokenProvider();
-        return authenticate(tokenProvider, login + ":" + password);
+        return authenticate(tokenProvider, login + ":" + password, false);
     }
 
     @Override
     public LiveData<User> authenticateExternal(String authCode, AuthenticationProviders authProvider) throws IOException {
         TokenProvider tokenProvider = new GoogleTokenProvider();
-        return authenticate(tokenProvider, authCode);
+        return authenticate(tokenProvider, authCode, true);
     }
 }

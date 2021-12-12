@@ -26,10 +26,22 @@ public interface MovieDAO {
     @Query("SELECT * FROM favorite_movies WHERE user_id=:id")
     LiveData<List<FavouriteWithRecord>> getUserFavourites(String id);
 
+    @Query("DELETE FROM favorite_movies WHERE user_id=:userId AND movie_id IN (:movieIdList)")
+    void removeExtraFavorites(String userId, List<String> movieIdList);
+
+    @Query("DELETE FROM favorite_movies WHERE user_id=:userId")
+    void removeUsersFavorites(String userId);
+
     @Query("SELECT EXISTS (SELECT * FROM favorite_movies WHERE user_id=:userId AND movie_id=:movieId)")
     Boolean isFavorite(String userId, String movieId);
 
-    @Insert
+    @Query("SELECT EXISTS(SELECT * FROM movies WHERE id = :id)")
+    Boolean isMovieExists(String id);
+
+    @Query("SELECT EXISTS(SELECT * FROM favorite_movies WHERE user_id = :userId AND movie_id = :movieId)")
+    Boolean isFavoriteExists(String userId, String movieId);
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     void addFavourite(FavoriteMovie favoriteMovie);
 
     @Delete

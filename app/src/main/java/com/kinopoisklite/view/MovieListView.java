@@ -73,8 +73,11 @@ public class MovieListView extends Fragment {
                 @Override
                 public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                     int position = viewHolder.getAdapterPosition();
-                    mViewModel.deleteMovie(((MovieListAdapter)
-                            binding.movieListView.getAdapter()).getMovies().get(position));
+                    List<Movie> movies = ((MovieListAdapter)
+                            binding.movieListView.getAdapter()).getMovies();
+                    mViewModel.deleteMovie(movies.get(position));
+                    movies.remove(position);
+                    binding.movieListView.getAdapter().notifyDataSetChanged();
                 }
             }).attachToRecyclerView(binding.movieListView);
     }

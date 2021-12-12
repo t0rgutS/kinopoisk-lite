@@ -7,6 +7,10 @@ import android.net.Uri;
 
 import androidx.lifecycle.ViewModel;
 
+import com.kinopoisklite.model.Movie;
+import com.kinopoisklite.repository.network.model.ServerMovieDTO;
+import com.kinopoisklite.utility.CoverProvider;
+
 import java.io.FileNotFoundException;
 
 import lombok.Setter;
@@ -15,16 +19,12 @@ public class CoverViewModel extends ViewModel {
     @Setter
     private String coverUri;
 
+    @Setter
+    private String coverContent;
+
     public Bitmap getCover(Activity parent) throws FileNotFoundException {
-        if (coverUri == null)
-            return null;
-        if (coverUri.isEmpty())
-            return null;
-        return BitmapFactory.decodeFileDescriptor(
-                parent.getApplicationContext()
-                        .getContentResolver().
-                        openFileDescriptor(
-                                Uri.parse(coverUri), "r")
-                        .getFileDescriptor());
+        return coverUri != null
+                ? CoverProvider.getFromLocal(coverUri, parent)
+                : CoverProvider.getFromServer(coverContent);
     }
 }

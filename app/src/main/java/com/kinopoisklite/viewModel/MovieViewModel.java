@@ -15,7 +15,9 @@ import com.kinopoisklite.model.Movie;
 import com.kinopoisklite.model.User;
 import com.kinopoisklite.repository.ResourceManager;
 import com.kinopoisklite.repository.dtoFactory.MovieDTOFactory;
+import com.kinopoisklite.repository.network.model.ServerMovieDTO;
 import com.kinopoisklite.security.Actions;
+import com.kinopoisklite.utility.CoverProvider;
 
 import java.io.FileNotFoundException;
 import java.util.List;
@@ -53,16 +55,11 @@ public class MovieViewModel extends ViewModel {
     }
 
     public Bitmap getCover(Activity parent, String coverUri) throws FileNotFoundException {
-        if (coverUri == null)
-            return null;
-        if (coverUri.isEmpty())
-            return null;
-        return BitmapFactory.decodeFileDescriptor(
-                parent.getApplicationContext()
-                        .getContentResolver().
-                        openFileDescriptor(
-                                Uri.parse(coverUri), "r")
-                        .getFileDescriptor());
+        return CoverProvider.getFromLocal(coverUri, parent);
+    }
+
+    public Bitmap getCover(String coverContent) {
+        return CoverProvider.getFromServer(coverContent);
     }
 
     public void saveMovie(String title, String releaseYear, String duration,
@@ -79,6 +76,7 @@ public class MovieViewModel extends ViewModel {
                 ResourceManager.getRepository().updateMovie(movie,
                         user != null ? user.getToken() : null);
                 movie.setAgeRating(rating);
+                movie.setCoverUri(coverUri);
                 savedMovie = movie;
             }
         } catch (Exception e) {
@@ -110,6 +108,7 @@ public class MovieViewModel extends ViewModel {
                     favoriteMovie.setUserId(sessionUser.getId());
                     favoriteMovie.setMovieId(savedMovie.getId());
                     favoriteMovie.setMovie(savedMovie);
+                    favoriteMovie.setUser(sessionUser);
                     ResourceManager.getRepository().addFavourite(favoriteMovie);
                     favorite = true;
                 }

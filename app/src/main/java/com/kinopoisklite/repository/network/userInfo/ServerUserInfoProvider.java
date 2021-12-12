@@ -19,7 +19,7 @@ public class ServerUserInfoProvider implements UserInfoProvider {
 
     public ServerUserInfoProvider() {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.1.6/api/")
+                .baseUrl("http://192.168.1.6:8080/api/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         api = retrofit.create(UserApi.class);
@@ -32,7 +32,7 @@ public class ServerUserInfoProvider implements UserInfoProvider {
             @Override
             public void onResponse(Call<Map> call, Response<Map> response) {
                 if (response.isSuccessful() && response.body() != null)
-                    userInfo.setValue(response.body());
+                    userInfo.setValue((Map) response.body().get("user"));
             }
 
             @Override

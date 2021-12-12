@@ -7,9 +7,7 @@ import com.kinopoisklite.BuildConfig;
 import com.kinopoisklite.repository.network.api.KinopoiskApi;
 import com.kinopoisklite.repository.network.model.GenresAndCountries;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import retrofit2.Call;

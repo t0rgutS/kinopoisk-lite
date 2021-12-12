@@ -16,37 +16,37 @@ import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 public interface MovieApi {
-    @GET("/movies")
+    @GET("movies")
     Call<List<ServerMovieDTO>> getAllMovies();
 
-    @GET("/movies/favorite")
+    @GET("favorite")
     Call<List<ServerMovieDTO>> getFavoriteMovies(@Header("Authorization") String bearerToken);
 
-    @GET("/movies/{id}")
+    @GET("movies/{id}")
     Call<ServerMovieDTO> getMovie(@Path("id") String movieId);
 
-    @GET("/movies/{id}/favorite")
+    @GET("favorite/{id}")
     Call<Map> isFav(@Path("id") String movieId,
                     @Header("Authorization") String bearerToken);
 
-    @POST("/movies/{id}/favorite")
-    Call<ResponseBody> addToFav(@Path("id") String movieId,
+    @POST("favorite/{id}")
+    Call<ServerMovieDTO> addToFav(@Path("id") String movieId,
                                 @Header("Authorization") String bearerToken);
 
-    @DELETE("/movies/{id}/favorite")
+    @DELETE("favorite/{id}")
     Call<ResponseBody> removeFromFav(@Path("id") String movieId,
                           @Header("Authorization") String bearerToken);
 
-    @POST("/movies")
+    @POST("movies")
     Call<ServerMovieDTO> createMovie(@Header("Authorization") String bearerToken,
                                      @Body ServerMovieDTO movie);
 
-    @PUT("/movies/{id}")
+    @PUT("movies/{id}")
     Call<ServerMovieDTO> updateMovie(@Path("id") String movieId,
                                      @Header("Authorization") String bearerToken,
                                      @Body ServerMovieDTO movie);
 
-    @DELETE("/movies/{id}")
+    @DELETE("movies/{id}")
     Call<ResponseBody> deleteMovie(@Path("id") String movieId,
                                    @Header("Authorization") String bearerToken);
 }

@@ -3,6 +3,7 @@ package com.kinopoisklite.security;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.kinopoisklite.model.Token;
 import com.kinopoisklite.model.User;
 import com.kinopoisklite.repository.ResourceManager;
 
@@ -24,8 +25,13 @@ public class SessionManagerImpl implements SessionManager {
         if (sessionUser == null) {
             String id = context.getSharedPreferences(SESSION_PREFERENCES, Context.MODE_PRIVATE)
                     .getString(SESSION_USER_ID, null);
-            if (id != null)
+            if (id != null) {
                 sessionUser = ResourceManager.getRepository().getUserById(id);
+                if (sessionUser != null) {
+                    Token token = ResourceManager.getRepository().getTokenByUserId(id);
+                    sessionUser.setToken(token);
+                }
+            }
         }
         return sessionUser;
     }
